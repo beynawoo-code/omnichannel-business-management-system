@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>智岩 · 业务全局能力架构图</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090f;
+      --bg-card: #0e1422;
+      --bg-el: #141b2e;
+      --border: rgba(255,255,255,.07);
+      --txt: #dde6f5;
+      --txt2: #7a90b0;
+      --txt3: #4a5e78;
+      --font: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+      /* Team colors */
+      --gtm: #3b82f6;
+      --gtm-bg: rgba(59,130,246,.12);
+      --gtm-border: rgba(59,130,246,.35);
+
+      --channel: #22c55e;
+      --channel-bg: rgba(34,197,94,.10);
+      --channel-border: rgba(34,197,94,.35);
+
+      --ads: #f97316;
+      --ads-bg: rgba(249,115,22,.10);
+      --ads-border: rgba(249,115,22,.35);
+
+      --brand: #a855f7;
+      --brand-bg: rgba(168,85,247,.10);
+      --brand-border: rgba(168,85,247,.35);
+
+      --supply: #ef4444;
+      --supply-bg: rgba(239,68,68,.10);
+      --supply-border: rgba(239,68,68,.30);
+
+      --finance: #f59e0b;
+      --finance-bg: rgba(245,158,11,.10);
+      --finance-border: rgba(245,158,11,.30);
+
+      --product: #06b6d4;
+      --product-bg: rgba(6,182,212,.10);
+      --product-border: rgba(6,182,212,.30);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+    html { font-size: 13px; scroll-behavior: smooth }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--txt);
+      line-height: 1.5;
+      padding: 40px 48px 80px;
+      min-width: 1280px;
+    }
+
+    /* ─── PAGE HEADER ─── */
+    .page-header {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+    .page-header .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 16px; border-radius: 99px;
+      background: rgba(59,130,246,.12);
+      border: 1px solid rgba(59,130,246,.3);
+      font-size: 11px; font-weight: 700; color: var(--gtm);
+      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16px;
+    }
+    .page-header h1 {
+      font-size: 34px; font-weight: 900; letter-spacing: -.04em;
+      background: linear-gradient(135deg, #e8ecf4 0%, #7eb3ff 45%, #c084fc 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+    .page-header p { font-size: 13px; color: var(--txt2); max-width: 680px; margin: 0 auto; }
+
+    /* ─── LEGEND ─── */
+    .legend-bar {
+      display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+      margin-bottom: 44px;
+      padding: 16px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+    .legend-bar .title {
+      width: 100%; text-align: center;
+      font-size: 11px; font-weight: 700; color: var(--txt3);
+      letter-spacing: .08em; text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 7px;
+      padding: 6px 14px; border-radius: 99px; border: 1px solid;
+      font-size: 12px; font-weight: 600;
+    }
+    .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+    .li-gtm     { background: var(--gtm-bg);     border-color: var(--gtm-border);     color: var(--gtm); }
+    .li-channel { background: var(--channel-bg);  border-color: var(--channel-border);  color: var(--channel); }
+    .li-ads     { background: var(--ads-bg);      border-color: var(--ads-border);      color: var(--ads); }
+    .li-brand   { background: var(--brand-bg);    border-color: var(--brand-border);    color: var(--brand); }
+    .li-supply  { background: var(--supply-bg);   border-color: var(--supply-border);   color: var(--supply); }
+    .li-finance { background: var(--finance-bg);  border-color: var(--finance-border);  color: var(--finance); }
+    .li-product { background: var(--product-bg);  border-color: var(--product-border);  color: var(--product); }
+
+    /* system badge */
+    .sys-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 7px; border-radius: 4px;
+      font-size: 9px; font-weight: 800; letter-spacing: .05em;
+      background: rgba(59,130,246,.2); border: 1px solid rgba(59,130,246,.4);
+      color: #93c5fd; margin-left: 4px; vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    /* ─── PHASE FLOW BAR ─── */
+    .flow-bar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0;
+      margin-bottom: 36px;
+      position: relative;
+    }
+    .flow-bar::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 2%;
+      right: 2%;
+      height: 2px;
+      background: linear-gradient(90deg,
+        rgba(59,130,246,.0) 0%,
+        rgba(59,130,246,.4) 15%,
+        rgba(168,85,247,.4) 50%,
+        rgba(34,197,94,.4) 85%,
+        rgba(34,197,94,.0) 100%);
+      z-index: 0;
+    }
+    .phase-node {
+      display: flex; flex-direction: column; align-items: center;
+      position: relative; z-index: 1;
+      cursor: default;
+    }
+    .phase-circle {
+      width: 48px; height: 48px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      border: 2px solid;
+      margin-bottom: 8px;
+      background: var(--bg);
+      transition: transform .2s;
+    }
+    .phase-node:hover .phase-circle { transform: scale(1.1); }
+    .phase-label {
+      font-size: 11.5px; font-weight: 700; text-align: center;
+      line-height: 1.4; max-width: 80px;
+    }
+    .phase-sub {
+      font-size: 10px; color: var(--txt3); text-align: center;
+      margin-top: 3px; max-width: 90px; line-height: 1.3;
+    }
+
+    /* Phase node colors */
+    .pn-1 .phase-circle { border-color: rgba(6,182,212,.5); background: rgba(6,182,212,.08); }
+    .pn-1 .phase-label  { color: var(--product); }
+    .pn-2 .phase-circle { border-color: rgba(59,130,246,.5); background: rgba(59,130,246,.08); }
+    .pn-2 .phase-label  { color: var(--gtm); }
+    .pn-3 .phase-circle { border-color: rgba(6,182,212,.4); background: rgba(6,182,212,.06); }
+    .pn-3 .phase-label  { color: #67e8f9; }
+    .pn-4 .phase-circle { border-color: rgba(168,85,247,.5); background: rgba(168,85,247,.08); }
+    .pn-4 .phase-label  { color: var(--brand); }
+    .pn-5 .phase-circle { border-color: rgba(249,115,22,.5); background: rgba(249,115,22,.08); }
+    .pn-5 .phase-label  { color: var(--ads); }
+    .pn-6 .phase-circle { border-color: rgba(34,197,94,.5); background: rgba(34,197,94,.08); }
+    .pn-6 .phase-label  { color: var(--channel); }
+    .pn-7 .phase-circle { border-color: rgba(245,158,11,.5); background: rgba(245,158,11,.08); }
+    .pn-7 .phase-label  { color: var(--finance); }
+
+    /* ─── CAPABILITY COLUMNS ─── */
+    .cap-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 12px;
+      align-items: start;
+    }
+    .cap-col {
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .cap-col-header {
+      font-size: 10px; font-weight: 800; letter-spacing: .07em;
+      text-transform: uppercase; text-align: center;
+      padding: 6px; border-radius: 8px; margin-bottom: 4px;
+    }
+
+    /* Capability card */
+    .cap-card {
+      border-radius: 10px; border: 1px solid;
+      padding: 10px 12px;
+      transition: transform .18s, box-shadow .18s;
+      cursor: default;
+      position: relative;
+    }
+    .cap-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0,0,0,.4);
+    }
+    .cap-title {
+      font-size: 12px; font-weight: 700; margin-bottom: 4px;
+      display: flex; align-items: flex-start; gap: 5px; flex-wrap: wrap;
+    }
+    .cap-owner {
+      font-size: 9.5px; font-weight: 800; padding: 1px 6px;
+      border-radius: 4px; white-space: nowrap; flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .cap-desc {
+      font-size: 10.5px; color: var(--txt2); line-height: 1.5;
+    }
+
+    /* Card colors */
+    .cc-gtm     { background: var(--gtm-bg);     border-color: var(--gtm-border); }
+    .cc-channel { background: var(--channel-bg);  border-color: var(--channel-border); }
+    .cc-ads     { background: var(--ads-bg);      border-color: var(--ads-border); }
+    .cc-brand   { background: var(--brand-bg);    border-color: var(--brand-border); }
+    .cc-supply  { background: var(--supply-bg);   border-color: var(--supply-border); }
+    .cc-finance { background: var(--finance-bg);  border-color: var(--finance-border); }
+    .cc-product { background: var(--product-bg);  border-color: var(--product-border); }
+    .cc-shared  { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.10); }
+
+    /* Owner tag colors */
+    .ot-gtm     { background: rgba(59,130,246,.2);   color: #93c5fd; }
+    .ot-channel { background: rgba(34,197,94,.2);     color: #86efac; }
+    .ot-ads     { background: rgba(249,115,22,.2);    color: #fdba74; }
+    .ot-brand   { background: rgba(168,85,247,.2);    color: #d8b4fe; }
+    .ot-supply  { background: rgba(239,68,68,.2);     color: #fca5a5; }
+    .ot-finance { background: rgba(245,158,11,.2);    color: #fde68a; }
+    .ot-product { background: rgba(6,182,212,.2);     color: #a5f3fc; }
+    .ot-shared  { background: rgba(255,255,255,.08);  color: var(--txt2); }
+
+    /* Column header accent colors */
+    .ch-1 { background: rgba(6,182,212,.1);   color: var(--product); border: 1px solid rgba(6,182,212,.2); }
+    .ch-2 { background: rgba(59,130,246,.1);  color: var(--gtm);     border: 1px solid rgba(59,130,246,.2); }
+    .ch-3 { background: rgba(6,182,212,.08);  color: #67e8f9;        border: 1px solid rgba(6,182,212,.15); }
+    .ch-4 { background: rgba(168,85,247,.1);  color: var(--brand);   border: 1px solid rgba(168,85,247,.2); }
+    .ch-5 { background: rgba(249,115,22,.1);  color: var(--ads);     border: 1px solid rgba(249,115,22,.2); }
+    .ch-6 { background: rgba(34,197,94,.1);   color: var(--channel); border: 1px solid rgba(34,197,94,.2); }
+    .ch-7 { background: rgba(245,158,11,.1);  color: var(--finance); border: 1px solid rgba(245,158,11,.2); }
+
+    /* ─── DIVIDER ─── */
+    .divider { height: 1px; background: var(--border); margin: 56px 0; }
+
+    /* ─── SUMMARY TABLE ─── */
+    .summary-section { margin-top: 20px; }
+    .summary-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .summary-card {
+      border-radius: 14px; border: 1px solid;
+      padding: 20px 18px;
+    }
+    .sc-gtm     { background: linear-gradient(135deg, rgba(59,130,246,.1), rgba(59,130,246,.04)); border-color: rgba(59,130,246,.3); }
+    .sc-nongtm  { background: linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.01)); border-color: rgba(255,255,255,.1); }
+    .sc-system  { background: linear-gradient(135deg, rgba(168,85,247,.1), rgba(59,130,246,.06)); border-color: rgba(168,85,247,.3); }
+
+    .sc-title { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+    .sc-sub   { font-size: 11px; color: var(--txt2); margin-bottom: 14px; }
+    .sc-item  {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 11.5px; color: var(--txt2);
+      padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+    .sc-item:last-child { border-bottom: none; }
+    .sc-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ─── SEC HEADER ─── */
+    .sec-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 28px;
+    }
+    .sec-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--gtm), var(--brand));
+      color: #fff;
+    }
+    .sec-title { font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+    .sec-desc  { font-size: 12px; color: var(--txt2); margin-top: 2px; }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      text-align: center; padding: 28px 0; border-top: 1px solid var(--border);
+      margin-top: 56px;
+    }
+    .footer p { font-size: 11px; color: var(--txt3); }
+  </style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="badge">🏢 Business Architecture · v1.0 · 2026-04-21</div>
+  <h1>智岩 跨境电商业务<br/>全局能力架构图</h1>
+  <p>基于完整业务生命周期，梳理公司各阶段所需的业务能力，并标注各能力归属的职能域，支撑 GTM 全渠道经营管理系统的范围界定</p>
+</div>
+
+<!-- LEGEND -->
+<div class="legend-bar">
+  <div class="title">职能域图例 — 每项能力的归属团队</div>
+  <div class="legend-item li-gtm">
+    <div class="legend-dot" style="background:var(--gtm)"></div>GTM / OC — 全渠道经营管理
+  </div>
+  <div class="legend-item li-channel">
+    <div class="legend-dot" style="background:var(--channel)"></div>渠道销售 — 各平台销售执行
+  </div>
+  <div class="legend-item li-ads">
+    <div class="legend-dot" style="background:var(--ads)"></div>广告投放 — 付费广告运营
+  </div>
+  <div class="legend-item li-brand">
+    <div class="legend-dot" style="background:var(--brand)"></div>品牌内容 — 内容/KOL/品牌
+  </div>
+  <div class="legend-item li-supply">
+    <div class="legend-dot" style="background:var(--supply)"></div>供应链 — 采购/库存/物流
+  </div>
+  <div class="legend-item li-finance">
+    <div class="legend-dot" style="background:var(--finance)"></div>财务 — 成本核算/经营分析
+  </div>
+  <div class="legend-item li-product">
+    <div class="legend-dot" style="background:var(--product)"></div>产品研发 — 选品/研发/认证
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#93c5fd;padding:4px 12px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);border-radius:99px;">
+    🔵 <strong>OC系统</strong> = 智岩全渠道管理系统已覆盖 / 规划覆盖
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 1: PHASE FLOW -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="sec-header">
+  <div class="sec-num">1</div>
+  <div>
+    <div class="sec-title">业务流程阶段 — 产品全生命周期</div>
+    <div class="sec-desc">从市场洞察到产品复盘，覆盖 7 大核心阶段</div>
+  </div>
+</div>
+
+<div class="flow-bar">
+  <div class="phase-node pn-1">
+    <div class="phase-circle">🔭</div>
+    <div class="phase-label">市场洞察</div>
+    <div class="phase-sub">Market Intelligence</div>
+  </div>
+  <div class="phase-node pn-2">
+    <div class="phase-circle">🎯</div>
+    <div class="phase-label">产品规划</div>
+    <div class="phase-sub">Product Planning</div>
+  </div>
+  <div class="phase-node pn-3">
+    <div class="phase-circle">🔬</div>
+    <div class="phase-label">产品开发</div>
+    <div class="phase-sub">Product Development</div>
+  </div>
+  <div class="phase-node pn-4">
+    <div class="phase-circle">🚀</div>
+    <div class="phase-label">GTM上市准备</div>
+    <div class="phase-sub">Go-to-Market</div>
+  </div>
+  <div class="phase-node pn-5">
+    <div class="phase-circle">📢</div>
+    <div class="phase-label">上市执行</div>
+    <div class="phase-sub">Launch Execution</div>
+  </div>
+  <div class="phase-node pn-6">
+    <div class="phase-circle">📊</div>
+    <div class="phase-label">在售运营</div>
+    <div class="phase-sub">In-Market Operations</div>
+  </div>
+  <div class="phase-node pn-7">
+    <div class="phase-circle">🔄</div>
+    <div class="phase-label">复盘与迭代</div>
+    <div class="phase-sub">Review & Iteration</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 2: CAPABILITY MAP -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="sec-header" style="margin-top:20px">
+  <div class="sec-num" style="background:linear-gradient(135deg,var(--channel),var(--gtm))">2</div>
+  <div>
+    <div class="sec-title">各阶段业务能力全景图</div>
+    <div class="sec-desc">每项能力标注归属职能域，蓝色 <span class="sys-badge">OC系统</span> 标记表示在智岩全渠道管理系统中实现</div>
+  </div>
+</div>
+
+<div class="cap-grid">
+
+  <!-- ─── PHASE 1: 市场洞察 ─── -->
+  <div class="cap-col">
+    <div class="cap-col-header ch-1">🔭 市场洞察</div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        市场趋势扫描<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">行业规模/增速、五看分析（行业/竞争/用户/自身/伙伴）</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        竞品监控与分析<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">竞品定价追踪、竞品评分分析、市场格局变化</div>
+    </div>
+
+    <div class="cap-card cc-product">
+      <div class="cap-title">
+        <span class="cap-owner ot-product">产品研发</span>
+        消费者洞察 VOC
+      </div>
+      <div class="cap-desc">用户评论分析、需求挖掘、痛点识别</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        品类机会识别<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">蓝海品类评估、市场份额变化、入局时机判断</div>
+    </div>
+
+    <div class="cap-card cc-channel">
+      <div class="cap-title">
+        <span class="cap-owner ot-channel">渠道销售</span>
+        平台趋势洞察
+      </div>
+      <div class="cap-desc">Amazon/TikTok/Shopify平台流量趋势、类目红利</div>
+    </div>
+  </div>
+
+  <!-- ─── PHASE 2: 产品规划 ─── -->
+  <div class="cap-col">
+    <div class="cap-col-header ch-2">🎯 产品规划</div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        选品决策支持<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">基于市场数据的选品评分、优先级排序</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        新品立项 IPD G0<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">立项评审(Gate 0)、商业可行性评估</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        目标定价制定<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">RRP目标定价、BOM成本目标、毛利率目标设定</div>
+    </div>
+
+    <div class="cap-card cc-product">
+      <div class="cap-title">
+        <span class="cap-owner ot-product">产品研发</span>
+        产品定义 MRD
+      </div>
+      <div class="cap-desc">产品需求文档、功能规格、差异化卖点</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        年度经营目标 BP<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">品线/SKU级销售BP制定、按渠道目标分解</div>
+    </div>
+
+    <div class="cap-card cc-supply">
+      <div class="cap-title">
+        <span class="cap-owner ot-supply">供应链</span>
+        首批备货规划
+      </div>
+      <div class="cap-desc">MOQ预判、首批数量规划、供应商资源匹配</div>
+    </div>
+  </div>
+
+  <!-- ─── PHASE 3: 产品开发 ─── -->
+  <div class="cap-col">
+    <div class="cap-col-header ch-3">🔬 产品开发</div>
+
+    <div class="cap-card cc-product">
+      <div class="cap-title">
+        <span class="cap-owner ot-product">产品研发</span>
+        研发项目管理
+      </div>
+      <div class="cap-desc">IPD流程管理、研发里程碑追踪 G1-G3</div>
+    </div>
+
+    <div class="cap-card cc-supply">
+      <div class="cap-title">
+        <span class="cap-owner ot-supply">供应链</span>
+        BOM成本管理<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">物料BOM录入、成本版本管理、目标成本对比</div>
+    </div>
+
+    <div class="cap-card cc-supply">
+      <div class="cap-title">
+        <span class="cap-owner ot-supply">供应链</span>
+        认证合规管理
+      </div>
+      <div class="cap-desc">CE/FCC/UL等认证申请追踪、合规风险管理</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        产品主数据建档<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">SPU/SKU创建、品线分类、产品规格建档</div>
+    </div>
+
+    <div class="cap-card cc-brand">
+      <div class="cap-title">
+        <span class="cap-owner ot-brand">品牌内容</span>
+        包装与说明书
+      </div>
+      <div class="cap-desc">包装设计、说明书自动化生成、多语言适配</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        样品评审 Gate<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">IPD Gate评审节点管理 G3-G4，上市就绪评估</div>
+    </div>
+  </div>
+
+  <!-- ─── PHASE 4: GTM上市准备 ─── -->
+  <div class="cap-col">
+    <div class="cap-col-header ch-4">🚀 GTM上市准备</div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        定价策略制定<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">RRP官方价 / 渠道起售价 / 倒推FOB，促销价下限</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        营销推广计划<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">上市营销节点、活动类型、折扣幅度下限设定</div>
+    </div>
+
+    <div class="cap-card cc-supply">
+      <div class="cap-title">
+        <span class="cap-owner ot-supply">供应链</span>
+        备货与发运计划<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">首批PO下单、头程物流安排、FBA/海外仓发运</div>
+    </div>
+
+    <div class="cap-card cc-channel">
+      <div class="cap-title">
+        <span class="cap-owner ot-channel">渠道销售</span>
+        Listing创建
+      </div>
+      <div class="cap-desc">各平台Listing草稿、关键词研究、变体配置</div>
+    </div>
+
+    <div class="cap-card cc-brand">
+      <div class="cap-title">
+        <span class="cap-owner ot-brand">品牌内容</span>
+        内容素材制作
+      </div>
+      <div class="cap-desc">主图/视频/A+页/品牌故事制作，KOL样品发送</div>
+    </div>
+
+    <div class="cap-card cc-ads">
+      <div class="cap-title">
+        <span class="cap-owner ot-ads">广告投放</span>
+        广告计划制定
+      </div>
+      <div class="cap-desc">SP/SB/SD广告策略、关键词词库、预算分配方案</div>
+    </div>
+
+    <div class="cap-card cc-finance">
+      <div class="cap-title">
+        <span class="cap-owner ot-finance">财务</span>
+        上市成本预算
+      </div>
+      <div class="cap-desc">营销推广费用预算、落地成本测算、首批毛利预测</div>
+    </div>
+  </div>
+
+  <!-- ─── PHASE 5: 上市执行 ─── -->
+  <div class="cap-col">
+    <div class="cap-col-header ch-5">📢 上市执行</div>
+
+    <div class="cap-card cc-channel">
+      <div class="cap-title">
+        <span class="cap-owner ot-channel">渠道销售</span>
+        Listing发布上架
+      </div>
+      <div class="cap-desc">Amazon/TikTok/Shopify多平台同步发布上架</div>
+    </div>
+
+    <div class="cap-card cc-ads">
+      <div class="cap-title">
+        <span class="cap-owner ot-ads">广告投放</span>
+        广告投放执行
+      </div>
+      <div class="cap-desc">SP/SB/SD广告上线、关键词竞价、日预算执行</div>
+    </div>
+
+    <div class="cap-card cc-brand">
+      <div class="cap-title">
+        <span class="cap-owner ot-brand">品牌内容</span>
+        KOL/网红营销
+      </div>
+      <div class="cap-desc">KOL合作上线、UGC内容推广、社媒发布</div>
+    </div>
+
+    <div class="cap-card cc-channel">
+      <div class="cap-title">
+        <span class="cap-owner ot-channel">渠道销售</span>
+        促销活动执行
+      </div>
+      <div class="cap-desc">Coupon/Lightning Deal/Prime Day报名执行</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        上市初期监控<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">新品追踪看板：销量爬坡、BSR排名、首月达成</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        价格执行监控<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">实时价格合规检查、低于下限告警、窜货预警</div>
+    </div>
+
+    <div class="cap-card cc-supply">
+      <div class="cap-title">
+        <span class="cap-owner ot-supply">供应链</span>
+        库存到位确认
+      </div>
+      <div class="cap-desc">FBA入仓确认、海外仓到位、库存健康初检</div>
+    </div>
+  </div>
+
+  <!-- ─── PHASE 6: 在售运营 ─── -->
+  <div class="cap-col">
+    <div class="cap-col-header ch-6">📊 在售运营</div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        经营全局看板<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">GMV/毛利/订单/库存DOI全渠道汇总大盘 (T+1)</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        目标达成追踪<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">BP vs 实际同比/环比差距、月度达成率预警</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        价格管理与风控<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">调价策略执行、促销下限管控、价差异常告警</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        PSI库存管理<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">多因子销量预测、补货计划建议、库存风险矩阵</div>
+    </div>
+
+    <div class="cap-card cc-ads">
+      <div class="cap-title">
+        <span class="cap-owner ot-ads">广告投放</span>
+        广告效果优化
+      </div>
+      <div class="cap-desc">ACOS/ROAS监控、关键词优化、竞价策略调整</div>
+    </div>
+
+    <div class="cap-card cc-channel">
+      <div class="cap-title">
+        <span class="cap-owner ot-channel">渠道销售</span>
+        渠道绩效管理<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">各渠道销售达成、渠道贡献占比、异常渠道归因</div>
+    </div>
+
+    <div class="cap-card cc-channel">
+      <div class="cap-title">
+        <span class="cap-owner ot-channel">渠道销售</span>
+        B2B分销商管理
+      </div>
+      <div class="cap-desc">经销商订单、渠道政策执行、分销网络维护</div>
+    </div>
+
+    <div class="cap-card cc-brand">
+      <div class="cap-title">
+        <span class="cap-owner ot-brand">品牌内容</span>
+        评价管理与VOC
+      </div>
+      <div class="cap-desc">差评预警、Review速率监控、用户反馈回收</div>
+    </div>
+
+    <div class="cap-card cc-finance">
+      <div class="cap-title">
+        <span class="cap-owner ot-finance">财务</span>
+        经营财务分析<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">实际毛利核算、费用结构分析、各渠道P&amp;L</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        产品生命周期管理<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">P0→P1→P2→EOL状态管理，退市信号识别</div>
+    </div>
+  </div>
+
+  <!-- ─── PHASE 7: 复盘与迭代 ─── -->
+  <div class="cap-col">
+    <div class="cap-col-header ch-7">🔄 复盘与迭代</div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        年度经营复盘<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">BP达成分析、各品线/渠道成功与失败归因</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        退市清货策略<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">EOL库存处理方案、降价清货策略、报废计划</div>
+    </div>
+
+    <div class="cap-card cc-gtm">
+      <div class="cap-title">
+        <span class="cap-owner ot-gtm">GTM</span>
+        下一代产品规划<span class="sys-badge">OC系统</span>
+      </div>
+      <div class="cap-desc">迭代升级决策依据、现有SKU问题汇总输入研发</div>
+    </div>
+
+    <div class="cap-card cc-finance">
+      <div class="cap-title">
+        <span class="cap-owner ot-finance">财务</span>
+        全年P&amp;L审计
+      </div>
+      <div class="cap-desc">全年毛利/费用复盘、财务合规审计</div>
+    </div>
+
+    <div class="cap-card cc-supply">
+      <div class="cap-title">
+        <span class="cap-owner ot-supply">供应链</span>
+        供应商绩效评估
+      </div>
+      <div class="cap-desc">年度供应商交期/质量/成本综合评价</div>
+    </div>
+
+    <div class="cap-card cc-ads">
+      <div class="cap-title">
+        <span class="cap-owner ot-ads">广告投放</span>
+        广告效果年度复盘
+      </div>
+      <div class="cap-desc">全年广告ROI、各渠道广告费占比、策略优化</div>
+    </div>
+
+    <div class="cap-card cc-product">
+      <div class="cap-title">
+        <span class="cap-owner ot-product">产品研发</span>
+        产品创新洞察输入
+      </div>
+      <div class="cap-desc">用户反馈汇总、竞品差距分析、下期选品建议</div>
+    </div>
+  </div>
+
+</div><!-- /cap-grid -->
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 3: SUMMARY / GTM BOUNDARY -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="sec-header">
+  <div class="sec-num" style="background:linear-gradient(135deg,var(--gtm),var(--channel))">3</div>
+  <div>
+    <div class="sec-title">能力归属总结 — GTM 系统边界定义</div>
+    <div class="sec-desc">基于以上能力全景图，明确智岩全渠道经营管理系统（OC系统）的职责范围与非职责范围</div>
+  </div>
+</div>
+
+<div class="summary-grid">
+
+  <!-- GTM系统核心能力 -->
+  <div class="summary-card sc-gtm">
+    <div class="sc-title" style="color:var(--gtm)">🔵 OC系统核心能力（GTM职责）</div>
+    <div class="sc-sub">GTM全渠道经营管理系统主要负责战略层决策与全局管控</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--gtm)"></div>市场洞察与竞品监控</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--gtm)"></div>年度经营目标 BP 制定与追踪</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--gtm)"></div>全渠道定价策略与价格管控</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--gtm)"></div>产品全生命周期状态管理</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--gtm)"></div>PSI 销量预测与库存管理</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--gtm)"></div>新品 IPD Gate 立项评审</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--gtm)"></div>全渠道经营看板（大盘/品线/SKU）</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--gtm)"></div>风控预警（毛利/库存/销量/价格）</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--gtm)"></div>营销推广下限策略制定</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--gtm)"></div>年度经营复盘与退市决策</div>
+  </div>
+
+  <!-- 非GTM能力（其他系统/团队） -->
+  <div class="summary-card sc-nongtm">
+    <div class="sc-title" style="color:var(--txt)">⚪ 非OC系统能力（其他职能域执行）</div>
+    <div class="sc-sub">由各渠道、广告、品牌、供应链、财务各团队在各自工具中执行</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--channel)"></div>渠道: Listing发布上架、订单处理、B2B分销</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--ads)"></div>广告: SP/SB/SD广告投放执行与优化</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--brand)"></div>品牌: KOL/UGC内容营销、评价管理</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--brand)"></div>品牌: 包装/A+内容素材制作</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--supply)"></div>供应链: 采购PO执行、头程发运、SRM</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--supply)"></div>供应链: 认证合规申请与管理</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--product)"></div>产品研发: 研发项目管理、样品打样</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--finance)"></div>财务: 实际成本核算与财务审计</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--channel)"></div>渠道: 平台促销活动报名执行</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--channel)"></div>渠道: D2C私域运营（Shopify官网）</div>
+  </div>
+
+  <!-- OC系统分期建设 -->
+  <div class="summary-card sc-system">
+    <div class="sc-title" style="color:#c084fc">🚀 OC系统分期建设规划</div>
+    <div class="sc-sub">按业务价值优先级，3期渐进式落地智岩全渠道管理平台</div>
+    <div class="sc-item" style="color:var(--channel)">
+      <div class="sc-dot" style="background:var(--channel)"></div>
+      <strong>Phase 1 (2026 Q2-Q3)</strong>
+    </div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--channel)"></div>全渠道经营看板 · BP目标追踪</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--channel)"></div>产品中心 SPU/SKU/BOM · 价格引擎</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--channel)"></div>PSI工作台 · 风控预警基础能力</div>
+    <div class="sc-item" style="color:var(--ads);margin-top:6px;">
+      <div class="sc-dot" style="background:var(--ads)"></div>
+      <strong>Phase 2 (2026 Q3-Q4)</strong>
+    </div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--ads)"></div>渠道订单全渠道汇聚 · 广告看板</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--ads)"></div>营销日历 · GTM项目中心</div>
+    <div class="sc-item" style="color:var(--brand);margin-top:6px;">
+      <div class="sc-dot" style="background:var(--brand)"></div>
+      <strong>Phase 3 (2027 Q1)</strong>
+    </div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--brand)"></div>AI Copilot · 自动化规则引擎</div>
+    <div class="sc-item"><div class="sc-dot" style="background:var(--brand)"></div>IPD Gate全流程管理 · 市场洞察</div>
+  </div>
+
+</div><!-- /summary-grid -->
+
+<!-- ─── KEY INSIGHT ─── -->
+<div style="margin-top:24px;padding:20px 24px;border-radius:14px;background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(168,85,247,.06));border:1px solid rgba(59,130,246,.2);">
+  <div style="font-size:13px;font-weight:800;color:var(--gtm);margin-bottom:10px;">💡 核心架构洞察 — GTM定位与系统边界</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+    <div>
+      <div style="font-size:11.5px;font-weight:700;color:#93c5fd;margin-bottom:6px;">GTM是"战略管控层"，不是"执行操作层"</div>
+      <div style="font-size:11px;color:var(--txt2);line-height:1.6;">GTM制定价格下限、营销策略框架、目标体系——具体的广告投放、Listing发布、订单处理由各渠道和职能团队执行，GTM负责监控与风控。</div>
+    </div>
+    <div>
+      <div style="font-size:11.5px;font-weight:700;color:#c4b5fd;margin-bottom:6px;">OC系统是"全局数据汇聚中心"</div>
+      <div style="font-size:11px;color:var(--txt2);line-height:1.6;">所有渠道的经营数据在OC系统中汇聚，GTM角色通过系统获得跨渠道、跨品线的整合视角，做出比单渠道更高层面的决策。</div>
+    </div>
+    <div>
+      <div style="font-size:11.5px;font-weight:700;color:#86efac;margin-bottom:6px;">业务流程驱动菜单设计</div>
+      <div style="font-size:11px;color:var(--txt2);line-height:1.6;">有了这张能力全景图，OC系统每个菜单都能找到对应的业务阶段与能力归属，菜单设计有据可依，与GTM职责精确匹配，不冗余、不缺失。</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>智岩OC Platform · 业务全局能力架构图 v1.0 · 2026-04-22</p>
+  <p style="margin-top:4px;"> 覆盖 7 大业务阶段 · 50+ 项业务能力 · 7 大职能域标注</p>
+  <p style="margin-top:14px;font-size:11px;color:#64748b;">
+    作者：<a href="https://github.com/beynawoo-code" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:none;font-weight:700;">@beynawoo-code</a>
+    <span style="opacity:.7;margin-left:6px;">· GitHub</span>
+  </p>
+</div>
+
+</body>
+</html>
