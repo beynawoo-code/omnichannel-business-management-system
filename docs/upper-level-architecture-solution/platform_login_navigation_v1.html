@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>蓝鲸 · 平台登录与导航交互方案 v1.0</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07090f;
+      --bg-card: #0e1422;
+      --bg-el: #141b2e;
+      --bg-pill: #1a2238;
+      --border: rgba(255, 255, 255, .07);
+      --border-hi: rgba(100, 180, 255, .25);
+      --txt: #dde6f5;
+      --txt2: #7a90b0;
+      --txt3: #4a5e78;
+      --blue: #3b82f6;
+      --green: #22c55e;
+      --purple: #a855f7;
+      --amber: #f59e0b;
+      --cyan: #06b6d4;
+      --red: #ef4444;
+      --orange: #f97316;
+      --teal: #14b8a6;
+      --slate: #64748b;
+      --r: 10px;
+      --r-lg: 18px;
+      --shadow: 0 8px 40px rgba(0, 0, 0, .5);
+      --font: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+      /* Platform colors */
+      --p-cog: #1e3a8a;
+      --p-prj: #f97316;
+      --p-ai: #a855f7;
+      --p-ops: #14b8a6;
+      --p-scm: #22c55e;
+      --p-sup: #64748b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 14px; scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background:
+        radial-gradient(1200px 600px at 50% -10%, rgba(59, 130, 246, .12), transparent 60%),
+        radial-gradient(800px 500px at 90% 20%, rgba(168, 85, 247, .08), transparent 60%),
+        var(--bg);
+      color: var(--txt);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 40px 50px 80px;
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .1); border-radius: 99px; }
+
+    /* ========== HEADER ========== */
+    .page-header { text-align: center; margin-bottom: 56px; }
+    .page-header .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 14px; border-radius: 99px;
+      background: rgba(59, 130, 246, .18);
+      border: 1px solid rgba(59, 130, 246, .3);
+      font-size: 11px; font-weight: 700; color: var(--blue);
+      letter-spacing: .08em; text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .page-header h1 {
+      font-size: 42px; font-weight: 900; letter-spacing: -.04em;
+      background: linear-gradient(135deg, #e8ecf4 0%, #7eb3ff 50%, #c084fc 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 14px;
+    }
+    .page-header .sub { font-size: 15px; color: var(--txt2); max-width: 720px; margin: 0 auto; }
+    .page-header .meta {
+      display: inline-flex; gap: 16px; margin-top: 18px;
+      font-size: 12px; color: var(--txt3); font-family: var(--mono);
+    }
+    .page-header .meta span { padding: 4px 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border); }
+
+    /* ========== Hero metric ========== */
+    .hero-metric {
+      max-width: 1280px; margin: 0 auto 64px;
+      display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 32px;
+      padding: 36px 48px; border-radius: var(--r-lg);
+      background: linear-gradient(135deg, rgba(59, 130, 246, .08), rgba(168, 85, 247, .08));
+      border: 1px solid var(--border);
+    }
+    .hero-side { text-align: center; }
+    .hero-side .label { font-size: 11px; color: var(--txt3); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px; }
+    .hero-side .num { font-size: 64px; font-weight: 900; letter-spacing: -.05em; }
+    .hero-side .desc { font-size: 13px; color: var(--txt2); margin-top: 8px; }
+    .hero-side.cur .num { color: #ef4444; opacity: .85; }
+    .hero-side.tgt .num { background: linear-gradient(135deg, var(--blue), var(--purple)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-arrow { font-size: 38px; color: var(--blue); animation: pulse 1.6s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { transform: translateX(0); opacity: .55; } 50% { transform: translateX(6px); opacity: 1; } }
+
+    /* ========== Section ========== */
+    section { max-width: 1280px; margin: 0 auto 80px; }
+    .sec-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+    .sec-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800;
+      background: linear-gradient(135deg, var(--blue), var(--purple)); color: #fff;
+    }
+    .sec-title { font-size: 24px; font-weight: 800; letter-spacing: -.02em; }
+    .sec-desc { font-size: 13px; color: var(--txt2); margin-top: 2px; }
+
+    /* ========== 6-Platform Matrix ========== */
+    .platform-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+    }
+    .platform-card {
+      position: relative;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg);
+      padding: 24px; overflow: hidden;
+      transition: all .3s ease;
+    }
+    .platform-card:hover { transform: translateY(-4px); border-color: var(--border-hi); }
+    .platform-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--accent, var(--blue));
+    }
+    .platform-card.cog { --accent: var(--p-cog); --accent-glow: rgba(30, 58, 138, .25); }
+    .platform-card.prj { --accent: var(--p-prj); --accent-glow: rgba(249, 115, 22, .25); }
+    .platform-card.ai { --accent: var(--p-ai); --accent-glow: rgba(168, 85, 247, .25); }
+    .platform-card.ops { --accent: var(--p-ops); --accent-glow: rgba(20, 184, 166, .25); }
+    .platform-card.scm { --accent: var(--p-scm); --accent-glow: rgba(34, 197, 94, .25); }
+    .platform-card.sup { --accent: var(--p-sup); --accent-glow: rgba(100, 116, 139, .25); }
+
+    .pf-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .pf-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--accent-glow); color: var(--accent);
+      font-size: 18px; font-weight: 900; font-family: var(--mono);
+    }
+    .pf-name { font-size: 17px; font-weight: 800; }
+    .pf-url {
+      display: inline-block; margin-left: auto;
+      font-family: var(--mono); font-size: 11px; color: var(--accent);
+      padding: 3px 8px; border-radius: 6px; background: var(--accent-glow);
+    }
+    .pf-tag { font-size: 12px; color: var(--txt2); margin-bottom: 14px; }
+    .pf-systems { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pf-system {
+      font-size: 11.5px; padding: 4px 10px; border-radius: 99px;
+      background: var(--bg-el); color: var(--txt); border: 1px solid var(--border);
+    }
+    .pf-meta { font-size: 11px; color: var(--txt3); margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border); }
+
+    /* ========== Mockup: Top Bar ========== */
+    .mockup-frame {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg);
+      overflow: hidden; box-shadow: var(--shadow);
+    }
+    .mockup-bar {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 22px; background: linear-gradient(180deg, #0f1729, #0a0f1c);
+      border-bottom: 1px solid var(--border);
+    }
+    .mockup-logo { font-weight: 900; font-size: 16px; letter-spacing: -.02em; }
+    .mockup-logo .blue { color: var(--blue); }
+
+    .mockup-pf-switcher, .mockup-sys-switcher {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 12px; border-radius: 8px;
+      background: var(--bg-el); border: 1px solid var(--border);
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+    .mockup-pf-switcher:hover, .mockup-sys-switcher:hover { border-color: var(--border-hi); }
+    .mockup-pf-switcher .dot, .mockup-sys-switcher .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--accent, var(--p-ops));
+    }
+    .mockup-pf-switcher .arrow, .mockup-sys-switcher .arrow { font-size: 10px; color: var(--txt3); }
+    .switcher-menu {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: calc(100% + 8px);
+      min-width: 200px;
+      max-height: 220px;
+      overflow: auto;
+      z-index: 50;
+      background: #0c1424;
+      border: 1px solid var(--border-hi);
+      border-radius: 10px;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, .45);
+      padding: 6px;
+    }
+    .switcher-menu.open { display: block; }
+    .switcher-item {
+      width: 100%;
+      text-align: left;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--txt2);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-family: var(--font);
+      cursor: pointer;
+    }
+    .switcher-item:hover {
+      color: var(--txt);
+      background: rgba(255, 255, 255, .06);
+    }
+    .switcher-item.active {
+      color: var(--txt);
+      background: var(--accent-glow, rgba(20, 184, 166, .2));
+      border-color: rgba(255, 255, 255, .12);
+      font-weight: 700;
+    }
+    .switcher-item.locked {
+      color: var(--txt3);
+      cursor: not-allowed;
+      background: transparent;
+      border-color: transparent;
+      opacity: .8;
+    }
+    .switcher-item.locked:hover {
+      color: var(--txt3);
+      background: rgba(255, 255, 255, .03);
+    }
+    .switcher-item .lock-icon {
+      margin-right: 6px;
+      font-size: 11px;
+      opacity: .85;
+    }
+
+    .permission-hint {
+      margin-top: 10px;
+      min-height: 18px;
+      font-size: 12px;
+      color: var(--txt3);
+      text-align: left;
+      padding-left: 4px;
+    }
+    .permission-hint.active { color: #f59e0b; }
+
+    .mockup-bar .spacer { flex: 1; }
+    .mockup-user {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 12px;
+    }
+
+    .mockup-body { display: grid; grid-template-columns: 220px 1fr; min-height: 280px; }
+    .mockup-side {
+      background: #0a0f1c; padding: 18px 14px; border-right: 1px solid var(--border);
+    }
+    .mockup-side .side-title { font-size: 11px; color: var(--txt3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; }
+    .mockup-side .side-item {
+      padding: 8px 12px; border-radius: 8px; font-size: 13px; color: var(--txt2);
+      display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+    }
+    .mockup-side .side-item.active { background: var(--accent-glow, rgba(20, 184, 166, .2)); color: var(--accent, var(--p-ops)); font-weight: 700; }
+    .mockup-side .side-item::before { content: '·'; color: var(--txt3); }
+    .mockup-side .side-item.active::before { color: var(--accent, var(--p-ops)); }
+
+    .mockup-page { padding: 22px 26px; }
+    .mockup-bread { font-size: 12px; color: var(--txt3); margin-bottom: 12px; font-family: var(--mono); }
+    .mockup-bread .arrow { color: var(--txt3); margin: 0 6px; }
+    .mockup-bread .url-cur { color: var(--blue); }
+    .mockup-h1 { font-size: 22px; font-weight: 800; margin-bottom: 16px; }
+    .mockup-stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .mockup-stat {
+      background: var(--bg-el); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px;
+    }
+    .mockup-stat .label { font-size: 11px; color: var(--txt3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; }
+    .mockup-stat .val { font-size: 20px; font-weight: 800; color: var(--accent, var(--p-ops)); font-family: var(--mono); }
+
+    /* Role tabs */
+    .role-tabs {
+      display: flex; gap: 8px; margin-bottom: 18px; padding: 6px;
+      background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border);
+      width: fit-content;
+    }
+    .role-tab {
+      padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: all .25s; color: var(--txt2);
+      border: 1px solid transparent;
+    }
+    .role-tab:hover { color: var(--txt); }
+    .role-tab.active { background: var(--bg-el); color: var(--txt); border-color: var(--border-hi); }
+
+    /* ========== Decision tree ========== */
+    .tree-wrap { display: flex; justify-content: center; }
+    .tree {
+      display: flex; flex-direction: column; gap: 0; align-items: stretch;
+      max-width: 880px; width: 100%;
+    }
+    .tree-step {
+      display: grid; grid-template-columns: 56px 1fr; gap: 18px; align-items: stretch;
+      position: relative;
+    }
+    .tree-step + .tree-step::before {
+      content: ''; position: absolute; left: 27px; top: -16px; width: 2px; height: 16px; background: linear-gradient(180deg, transparent, var(--blue));
+    }
+    .tree-num {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--bg-card); border: 2px solid var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; color: var(--blue); font-size: 18px; font-family: var(--mono);
+    }
+    .tree-content {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 16px 20px; margin-bottom: 16px;
+    }
+    .tree-q { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .tree-a { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12.5px; }
+    .tree-a .yes, .tree-a .no { padding: 8px 12px; border-radius: 8px; }
+    .tree-a .yes { background: rgba(34, 197, 94, .1); border: 1px solid rgba(34, 197, 94, .25); color: #4ade80; }
+    .tree-a .no { background: rgba(239, 68, 68, .08); border: 1px solid rgba(239, 68, 68, .2); color: #f87171; }
+    .tree-a strong { font-weight: 700; margin-right: 4px; }
+
+    /* ========== URL spec ========== */
+    .url-spec {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 28px;
+    }
+    .url-template {
+      font-family: var(--mono); font-size: 18px; font-weight: 700;
+      padding: 18px 22px; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, .12), rgba(168, 85, 247, .12));
+      border: 1px solid var(--border-hi);
+      margin-bottom: 22px; text-align: center; letter-spacing: .02em;
+    }
+    .url-template .seg-pf { color: var(--blue); }
+    .url-template .seg-sys { color: var(--purple); }
+    .url-template .seg-mod { color: var(--amber); }
+    .url-template .seg-res { color: var(--cyan); }
+    .url-template .slash { color: var(--txt3); }
+    .url-examples { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .url-example {
+      font-family: var(--mono); font-size: 12.5px; padding: 10px 14px;
+      background: var(--bg-el); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--txt2);
+    }
+    .url-example b { color: var(--txt); font-weight: 600; }
+
+    /* ========== 3-layer ops ========== */
+    .ops-layers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .ops-layer {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg);
+      padding: 22px; position: relative;
+    }
+    .ops-layer .lvl {
+      display: inline-block; padding: 3px 10px; border-radius: 6px;
+      font-size: 11px; font-weight: 800; letter-spacing: .08em;
+      background: var(--accent-glow, rgba(59, 130, 246, .2));
+      color: var(--accent, var(--blue));
+      margin-bottom: 12px;
+    }
+    .ops-layer.l1 { --accent: var(--p-prj); --accent-glow: rgba(249, 115, 22, .18); }
+    .ops-layer.l2 { --accent: var(--p-ops); --accent-glow: rgba(20, 184, 166, .18); }
+    .ops-layer.l3 { --accent: var(--p-cog); --accent-glow: rgba(59, 130, 246, .2); }
+    .ops-layer h4 { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+    .ops-layer .nature { font-size: 12px; color: var(--txt2); margin-bottom: 12px; }
+    .ops-layer .home { font-size: 12px; color: var(--txt3); margin-bottom: 8px; }
+    .ops-layer .home strong { color: var(--accent); font-family: var(--mono); }
+    .ops-layer .examples { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ops-layer .examples span {
+      font-size: 11.5px; padding: 4px 10px; border-radius: 99px;
+      background: var(--bg-el); color: var(--txt2); border: 1px solid var(--border);
+    }
+
+    /* ========== Decisions list ========== */
+    .decisions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .decision-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 18px 20px;
+    }
+    .decision-card .id {
+      display: inline-block; font-family: var(--mono); font-weight: 800;
+      font-size: 12px; padding: 3px 8px; border-radius: 6px;
+      background: rgba(59, 130, 246, .18); color: var(--blue);
+      margin-bottom: 10px;
+    }
+    .decision-card h4 { font-size: 15px; font-weight: 800; margin-bottom: 6px; }
+    .decision-card .choice {
+      font-size: 13px; color: var(--blue); margin-bottom: 8px; font-weight: 600;
+    }
+    .decision-card .reason { font-size: 12.5px; color: var(--txt2); }
+
+    /* ========== Phase Roadmap ========== */
+    .roadmap {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg);
+      padding: 26px;
+    }
+    .phase {
+      padding: 18px 16px; border-radius: 12px; background: var(--bg-el); border: 1px solid var(--border);
+    }
+    .phase .ph-tag {
+      font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--accent, var(--blue)); margin-bottom: 4px;
+    }
+    .phase.p0 { --accent: var(--green); }
+    .phase.p1 { --accent: var(--blue); }
+    .phase.p2 { --accent: var(--purple); }
+    .phase.p3 { --accent: var(--amber); }
+    .phase .ph-time { font-size: 12px; color: var(--txt3); margin-bottom: 10px; }
+    .phase h4 { font-size: 14px; font-weight: 800; margin-bottom: 10px; }
+    .phase ul { list-style: none; padding: 0; margin: 0; }
+    .phase ul li { font-size: 12px; color: var(--txt2); padding: 4px 0; padding-left: 14px; position: relative; }
+    .phase ul li::before { content: ''; position: absolute; left: 0; top: 12px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+    /* ========== Open Items ========== */
+    .open-items { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .open-item {
+      background: var(--bg-card); border: 1px solid rgba(245, 158, 11, .25); border-radius: 12px;
+      padding: 16px 18px;
+    }
+    .open-item .id {
+      display: inline-block; font-family: var(--mono); font-weight: 800;
+      font-size: 12px; padding: 3px 8px; border-radius: 6px;
+      background: rgba(245, 158, 11, .18); color: var(--amber);
+      margin-bottom: 8px;
+    }
+    .open-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+    .open-item .default { font-size: 12px; color: var(--txt2); }
+    .open-item .default b { color: var(--green); }
+
+    /* ========== Footer ========== */
+    footer {
+      max-width: 1280px; margin: 80px auto 0; padding-top: 32px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 12px; color: var(--txt3);
+    }
+    footer a { color: var(--blue); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    footer .left { display: flex; gap: 18px; }
+    footer .left span { padding: 3px 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; font-family: var(--mono); }
+
+    @media (max-width: 1100px) {
+      .platform-grid, .decisions, .open-items { grid-template-columns: repeat(2, 1fr); }
+      .roadmap { grid-template-columns: repeat(2, 1fr); }
+      .ops-layers { grid-template-columns: 1fr; }
+      .hero-metric { grid-template-columns: 1fr; }
+      .hero-arrow { transform: rotate(90deg); }
+    }
+    @media (max-width: 720px) {
+      body { padding: 24px 18px 60px; }
+      .platform-grid, .decisions, .open-items, .roadmap, .url-examples { grid-template-columns: 1fr; }
+      .mockup-body { grid-template-columns: 1fr; }
+      .mockup-side { display: none; }
+      .page-header h1 { font-size: 28px; }
+      .hero-side .num { font-size: 44px; }
+    }
+
+    /* ========== AI Platform Strategy ========== */
+    .dual-engine {
+      display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; align-items: stretch;
+      margin-bottom: 36px;
+    }
+    .engine-card {
+      border: 1px solid var(--border); border-radius: var(--r-lg);
+      padding: 22px 24px;
+      border-top-width: 3px; border-top-style: solid;
+      background: linear-gradient(180deg, var(--eng-glow), transparent 30%), var(--bg-card);
+    }
+    .engine-card.ops-eng { --eng-color: var(--p-ops); --eng-glow: rgba(20, 184, 166, .15); border-top-color: var(--p-ops); }
+    .engine-card.ai-eng { --eng-color: var(--p-ai); --eng-glow: rgba(168, 85, 247, .15); border-top-color: var(--p-ai); }
+    .engine-card .eng-tag {
+      display: inline-block; padding: 3px 10px; border-radius: 6px;
+      font-size: 11px; font-weight: 800; letter-spacing: .08em;
+      background: var(--eng-glow); color: var(--eng-color); margin-bottom: 10px;
+    }
+    .engine-card h4 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+    .engine-card p { font-size: 13px; color: var(--txt2); margin-bottom: 14px; }
+    .engine-card .eng-stat { font-size: 12px; color: var(--eng-color); font-family: var(--mono); font-weight: 700; padding-top: 12px; border-top: 1px dashed var(--border); }
+    .engine-x {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 900; color: var(--txt3);
+      font-family: var(--mono);
+    }
+
+    .ai-h3 {
+      font-size: 18px; font-weight: 800; margin: 32px 0 6px; letter-spacing: -.01em;
+      color: var(--txt);
+    }
+    .ai-sub { font-size: 13px; color: var(--txt2); margin-bottom: 18px; }
+
+    .advantages-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px;
+    }
+    .adv-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 18px 16px; transition: all .25s;
+    }
+    .adv-card:hover { transform: translateY(-3px); border-color: rgba(168, 85, 247, .35); }
+    .adv-card .adv-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(168, 85, 247, .15); color: var(--p-ai);
+      font-size: 18px; font-weight: 900; margin-bottom: 12px;
+    }
+    .adv-card h5 { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+    .adv-card p { font-size: 12px; color: var(--txt2); }
+
+    .paths-pair {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px;
+    }
+    .path-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg);
+      padding: 22px 26px;
+    }
+    .path-card.path-calc { border-left: 3px solid var(--cyan); }
+    .path-card.path-grow { border-left: 3px solid var(--p-ai); }
+    .path-card .path-tag {
+      font-family: var(--mono); font-size: 11px; font-weight: 800;
+      letter-spacing: .12em; color: var(--txt3); margin-bottom: 8px;
+    }
+    .path-card h4 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+    .path-card .path-tagline { font-size: 13px; color: var(--cyan); font-weight: 600; margin-bottom: 14px; }
+    .path-card.path-grow .path-tagline { color: var(--p-ai); }
+    .path-card ul { list-style: none; padding: 0; margin: 0 0 14px; }
+    .path-card ul li { font-size: 12.5px; color: var(--txt2); padding: 5px 0; padding-left: 16px; position: relative; }
+    .path-card ul li::before { content: '·'; position: absolute; left: 4px; color: var(--txt3); font-weight: 900; }
+    .path-card .path-foot { font-size: 11px; color: var(--txt3); padding-top: 10px; border-top: 1px dashed var(--border); }
+    .grow-levels {
+      font-family: var(--mono); font-size: 13px; font-weight: 600;
+      padding: 10px 14px; border-radius: 8px; margin-bottom: 12px;
+      background: linear-gradient(90deg, rgba(168, 85, 247, .18), rgba(168, 85, 247, .04));
+      color: #d4b8ff; letter-spacing: .03em;
+    }
+
+    .ai-foot {
+      font-size: 13px; color: var(--txt2); padding: 16px 22px; border-radius: 12px;
+      background: var(--bg-card); border: 1px solid var(--border); margin-top: 8px;
+    }
+    .ai-foot strong { color: var(--purple); font-weight: 700; }
+
+    @media (max-width: 1100px) {
+      .dual-engine { grid-template-columns: 1fr; }
+      .engine-x { transform: rotate(90deg); }
+      .advantages-grid { grid-template-columns: repeat(3, 1fr); }
+      .paths-pair { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .advantages-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ========== Project Platform Strategy ========== */
+    .proj-vision {
+      background: linear-gradient(135deg, rgba(249, 115, 22, .12), rgba(249, 115, 22, .03));
+      border: 1px solid rgba(249, 115, 22, .25);
+      border-radius: var(--r-lg); padding: 22px 28px;
+      margin-bottom: 28px;
+      display: flex; align-items: center; gap: 22px;
+    }
+    .proj-vision .vision-mark {
+      flex-shrink: 0; width: 56px; height: 56px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--p-prj), #c2410c);
+      color: #fff; font-size: 22px; font-weight: 900; font-family: var(--mono);
+      box-shadow: 0 6px 18px rgba(249, 115, 22, .3);
+    }
+    .proj-vision .vision-text strong {
+      font-size: 16px; font-weight: 800; color: var(--p-prj); display: block; margin-bottom: 4px;
+    }
+    .proj-vision .vision-text span { font-size: 13px; color: var(--txt2); }
+
+    .proj-type-matrix {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px;
+    }
+    .proj-type-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 16px 14px;
+    }
+    .proj-type-card.cat-rd { border-top: 3px solid var(--blue); }
+    .proj-type-card.cat-mkt { border-top: 3px solid var(--p-prj); }
+    .proj-type-card.cat-agile { border-top: 3px solid var(--p-ai); }
+    .proj-type-card.cat-task { border-top: 3px solid var(--cyan); }
+    .proj-type-card.cat-spot { border-top: 3px solid var(--green); }
+
+    .proj-cat-head {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+    }
+    .proj-cat-name { font-size: 13px; font-weight: 800; }
+    .proj-cat-count {
+      font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--txt3);
+      padding: 2px 7px; background: var(--bg-el); border-radius: 99px;
+    }
+    .proj-items { display: flex; flex-direction: column; gap: 6px; }
+    .proj-item {
+      display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--txt2);
+    }
+    .proj-code {
+      width: 22px; height: 22px; border-radius: 5px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 11px; font-weight: 800;
+      background: var(--bg-el); color: var(--txt); border: 1px solid var(--border);
+    }
+    .proj-type-card.cat-rd .proj-code { background: rgba(59, 130, 246, .15); color: #93c5fd; border-color: rgba(59, 130, 246, .3); }
+    .proj-type-card.cat-mkt .proj-code { background: rgba(249, 115, 22, .15); color: #fdba74; border-color: rgba(249, 115, 22, .3); }
+    .proj-type-card.cat-agile .proj-code { background: rgba(168, 85, 247, .15); color: #d8b4fe; border-color: rgba(168, 85, 247, .3); }
+    .proj-type-card.cat-task .proj-code { background: rgba(6, 182, 212, .15); color: #67e8f9; border-color: rgba(6, 182, 212, .3); }
+    .proj-type-card.cat-spot .proj-code { background: rgba(34, 197, 94, .15); color: #86efac; border-color: rgba(34, 197, 94, .3); }
+
+    .management-axis {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 16px;
+    }
+    .mgmt-pill {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px 12px; text-align: center;
+    }
+    .mgmt-pill .mgmt-icon {
+      width: 30px; height: 30px; border-radius: 8px; margin: 0 auto 8px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(249, 115, 22, .15); color: var(--p-prj);
+      font-size: 14px; font-weight: 900;
+    }
+    .mgmt-pill h5 { font-size: 13px; font-weight: 800; margin-bottom: 4px; }
+    .mgmt-pill p { font-size: 11px; color: var(--txt2); line-height: 1.4; }
+
+    .pain-solve {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+      margin-top: 8px;
+    }
+    .pain-row {
+      display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: center;
+      padding: 12px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+    }
+    .pain-row .pain {
+      font-size: 12px; color: #f87171;
+    }
+    .pain-row .arrow {
+      font-size: 16px; color: var(--txt3); font-weight: 900;
+    }
+    .pain-row .solve {
+      font-size: 12px; color: #86efac;
+    }
+    .pain-row .pain b, .pain-row .solve b { font-weight: 700; }
+
+    @media (max-width: 1100px) {
+      .proj-type-matrix { grid-template-columns: repeat(3, 1fr); }
+      .management-axis { grid-template-columns: repeat(3, 1fr); }
+      .pain-solve { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .proj-type-matrix { grid-template-columns: 1fr; }
+      .management-axis { grid-template-columns: repeat(2, 1fr); }
+      .proj-vision { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ============== HEADER ============== -->
+  <header class="page-header">
+    <div class="badge">Platform Architecture · v1.0 · Proposed</div>
+    <h1>蓝鲸 · 平台登录与导航交互方案</h1>
+    <p class="sub">把 18 项扁平菜单收敛为 6 个独立平台入口，登录后按角色直达"主平台 / 主子系统"，URL 三段式承载权限、埋点与深链。</p>
+    <div class="meta">
+      <span>v1.0 · 2026-05-09</span>
+      <span>状态：Proposed</span>
+      <span>6 平台 / 17+ 子系统</span>
+    </div>
+  </header>
+
+  <!-- ============== HERO METRIC ============== -->
+  <div class="hero-metric">
+    <div class="hero-side cur">
+      <div class="label">现状</div>
+      <div class="num">18</div>
+      <div class="desc">扁平下拉项，维度混杂<br/>（业务域 / 渠道 / 运营行为并列）</div>
+    </div>
+    <div class="hero-arrow">&#8594;</div>
+    <div class="hero-side tgt">
+      <div class="label">目标</div>
+      <div class="num">6</div>
+      <div class="desc">独立平台入口，每个平台心智清晰<br/>子系统作为平台内二级</div>
+    </div>
+  </div>
+
+  <!-- ============== Section 1: 6 Platform Matrix ============== -->
+  <section>
+    <div class="sec-header">
+      <div class="sec-num">1</div>
+      <div>
+        <div class="sec-title">6 个独立平台入口</div>
+        <div class="sec-desc">按"用户日常打开哪个就能干完自己活"的视角划分；URL 前缀承载权限与埋点。</div>
+      </div>
+    </div>
+
+    <div class="platform-grid">
+
+      <div class="platform-card cog">
+        <div class="pf-head">
+          <div class="pf-icon">CG</div>
+          <div class="pf-name">认知平台</div>
+          <div class="pf-url">/cognition</div>
+        </div>
+        <div class="pf-tag">员工知识与实践经验的沉淀、提报与分享 · 让组织持续产生更优秀的认知</div>
+        <div class="pf-systems">
+          <span class="pf-system">认知 APP（员工端）</span>
+          <span class="pf-system">认知后台（内容运营）</span>
+        </div>
+        <div class="pf-meta">主用户：全员（贡献者 + 学习者）· 内容运营</div>
+      </div>
+
+      <div class="platform-card prj">
+        <div class="pf-head">
+          <div class="pf-icon">PJ</div>
+          <div class="pf-name">项目平台</div>
+          <div class="pf-url">/project</div>
+        </div>
+        <div class="pf-tag">项目制为主 · 职责制为辅 · 一站式整合公司全部项目类型（5 大类 / 15+ 模板）</div>
+        <div class="pf-systems">
+          <span class="pf-system">立项中心</span>
+          <span class="pf-system">项目工作台</span>
+          <span class="pf-system">Gate 评审</span>
+          <span class="pf-system">项目模板库</span>
+          <span class="pf-system">奖金输出</span>
+        </div>
+        <div class="pf-meta">主用户：公司全员（项目代表 / 成员 / Gate 评审方）</div>
+      </div>
+
+      <div class="platform-card ai">
+        <div class="pf-head">
+          <div class="pf-icon">AI</div>
+          <div class="pf-name">AI 平台</div>
+          <div class="pf-url">/ai</div>
+        </div>
+        <div class="pf-tag">组织创造力的副引擎 · 与运营平台双轨</div>
+        <div class="pf-systems">
+          <span class="pf-system">知言对话</span>
+          <span class="pf-system">AI 成长营</span>
+          <span class="pf-system">智能预警</span>
+          <span class="pf-system">工作流</span>
+          <span class="pf-system">知识库</span>
+          <span class="pf-system">Agent 配置</span>
+        </div>
+        <div class="pf-meta">主用户：全员（被 AI 赋能）+ AI 训练师（喂养 AI 成长）</div>
+      </div>
+
+      <div class="platform-card ops">
+        <div class="pf-head">
+          <div class="pf-icon">OP</div>
+          <div class="pf-name">运营平台</div>
+          <div class="pf-url">/ops</div>
+        </div>
+        <div class="pf-tag">一线作战 · 把货卖出去</div>
+        <div class="pf-systems">
+          <span class="pf-system" style="background: rgba(20,184,166,.18); border-color: rgba(20,184,166,.4); color: #5eead4; font-weight: 700;">全渠道（OC-GTM）★</span>
+          <span class="pf-system">销售</span>
+          <span class="pf-system">自营</span>
+          <span class="pf-system">商超</span>
+          <span class="pf-system">分销</span>
+          <span class="pf-system">广告（含站外）</span>
+          <span class="pf-system">客服</span>
+          <span class="pf-system">用户</span>
+        </div>
+        <div class="pf-meta">主用户：销售 / 投手 / 客服 / KA / 决策方…</div>
+      </div>
+
+      <div class="platform-card scm">
+        <div class="pf-head">
+          <div class="pf-icon">SC</div>
+          <div class="pf-name">供应链平台</div>
+          <div class="pf-url">/scm</div>
+        </div>
+        <div class="pf-tag">货从哪来 · 怎么到</div>
+        <div class="pf-systems">
+          <span class="pf-system">采购</span>
+          <span class="pf-system">生产</span>
+          <span class="pf-system">物流（含交付）</span>
+          <span class="pf-system">质量</span>
+        </div>
+        <div class="pf-meta">主用户：计划 / 采购 / 仓储 / QA</div>
+      </div>
+
+      <div class="platform-card sup">
+        <div class="pf-head">
+          <div class="pf-icon">SP</div>
+          <div class="pf-name">支持平台</div>
+          <div class="pf-url">/support</div>
+        </div>
+        <div class="pf-tag">让前 5 个平台合规跑起来的后台职能</div>
+        <div class="pf-systems">
+          <span class="pf-system">财务</span>
+          <span class="pf-system">认证</span>
+          <span class="pf-system">合同</span>
+          <span class="pf-system">知识产权</span>
+          <span class="pf-system">研发</span>
+        </div>
+        <div class="pf-meta">主用户：财务 / 法务 / 合规 / 管理员</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== Section 2: Mockup ============== -->
+  <section>
+    <div class="sec-header">
+      <div class="sec-num">2</div>
+      <div>
+        <div class="sec-title">登录后界面 · 顶栏两级切换器</div>
+        <div class="sec-desc">替代当前 18 项扁平下拉。支持"默认直达 + 已授权范围内自由切换"：角色可有多个平台与多个子系统权限（如高级管理员、CTO）。</div>
+      </div>
+    </div>
+
+    <div class="role-tabs" id="roleTabs">
+      <div class="role-tab active" data-role="admin">高级管理员</div>
+      <div class="role-tab" data-role="ads">广告优化师</div>
+      <div class="role-tab" data-role="finance">财务</div>
+      <div class="role-tab" data-role="cs">客服</div>
+      <div class="role-tab" data-role="gtm">GTM/PM</div>
+      <div class="role-tab" data-role="exec">GTM/Sales</div>
+      <div class="role-tab" data-role="cog">认知贡献者</div>
+    </div>
+
+    <div class="mockup-frame" id="mockupFrame" style="--accent: var(--p-ops); --accent-glow: rgba(20, 184, 166, .25);">
+      <div class="mockup-bar">
+        <div class="mockup-logo"><span class="blue">蓝鲸</span> Lanjing</div>
+        <div class="mockup-pf-switcher" id="pfSwitcher">
+          <span class="dot"></span>
+          <span id="pfName">运营平台</span>
+          <span class="arrow">&#9662;</span>
+          <div class="switcher-menu" id="pfMenu"></div>
+        </div>
+        <div class="mockup-sys-switcher" id="sysSwitcher">
+          <span class="dot"></span>
+          <span id="sysName">广告</span>
+          <span class="arrow">&#9662;</span>
+          <div class="switcher-menu" id="sysMenu"></div>
+        </div>
+        <div class="spacer"></div>
+        <div class="mockup-user" id="userInitial">A</div>
+      </div>
+      <div class="mockup-body">
+        <aside class="mockup-side" id="sideMenu">
+          <div class="side-title">广告</div>
+          <div class="side-item active">整体看板</div>
+          <div class="side-item">广告活动</div>
+          <div class="side-item">站外广告</div>
+          <div class="side-item">关键词</div>
+          <div class="side-item">报告中心</div>
+        </aside>
+        <main class="mockup-page">
+          <div class="mockup-bread" id="breadCrumb">
+            <span>蓝鲸</span><span class="arrow">/</span>
+            <span id="breadPf">运营平台</span><span class="arrow">/</span>
+            <span id="breadSys">广告</span><span class="arrow">/</span>
+            <span class="url-cur" id="breadMod">整体看板</span>
+          </div>
+          <h2 class="mockup-h1" id="pageTitle">广告整体看板</h2>
+          <div class="mockup-stat-row" id="statRow">
+            <div class="mockup-stat"><div class="label">Adsales</div><div class="val">3.29M</div></div>
+            <div class="mockup-stat"><div class="label">Spend</div><div class="val">394K</div></div>
+            <div class="mockup-stat"><div class="label">ACOS</div><div class="val">11.99%</div></div>
+            <div class="mockup-stat"><div class="label">ROAS</div><div class="val">8.34</div></div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <div class="permission-hint" id="permissionHint">提示：灰显带锁项代表未授权，可申请权限。</div>
+
+    <p style="margin-top: 16px; font-size: 12px; color: var(--txt3); text-align: center;">
+      切换角色后顶栏主题色、子系统菜单、面包屑 URL 全部联动 — 这是登录后用户实际看到的界面雏形
+    </p>
+
+    <div class="url-spec" style="margin-top: 16px;">
+      <div style="font-size: 14px; font-weight: 800; margin-bottom: 10px;">多权限角色策略（登录直达 + 顶栏可切换）</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="url-example"><b>默认落地</b>：按 `primaryPlatform + primarySystem` 直达；如未配置则走 `/home`。</div>
+        <div class="url-example"><b>平台切换</b>：左切换器展示 `visiblePlatforms`，可在已授权平台间自由切换。</div>
+        <div class="url-example"><b>子系统切换</b>：右切换器展示当前平台的 `visibleSystems[platform]`。</div>
+        <div class="url-example"><b>权限边界</b>：未授权平台/子系统不展示或灰显，后端 `scope` 强校验。</div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+        <div class="url-example"><b>高级管理员示例</b>：默认 `/support/users/dashboard`，可切换 `ops/scm/ai/project/cognition`。</div>
+        <div class="url-example"><b>CTO 示例</b>：默认 `/ops/omnichannel/cockpit/overview`，可切换 `project/ai/support` 下已授权子系统。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== Section 3: Landing Decision ============== -->
+  <section>
+    <div class="sec-header">
+      <div class="sec-num">3</div>
+      <div>
+        <div class="sec-title">登录后到底跳哪儿 · 落地决策链</div>
+        <div class="sec-desc">优先级链：<b style="color: var(--blue);">深链 → 主岗位 → 唯一可见平台 → lastVisited → /home</b>。任一无权限 → 403。</div>
+      </div>
+    </div>
+
+    <div class="tree-wrap">
+      <div class="tree">
+
+        <div class="tree-step">
+          <div class="tree-num">1</div>
+          <div class="tree-content">
+            <div class="tree-q">URL 含 deepLink？例 <code style="font-family: var(--mono); color: var(--blue);">/ops/ads/dashboard</code></div>
+            <div class="tree-a">
+              <div class="yes"><strong>是 →</strong>校验平台 / 子系统 / scope，全部通过则直达；任一失败 → 403</div>
+              <div class="no"><strong>否 →</strong>进入下一判断</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tree-step">
+          <div class="tree-num">2</div>
+          <div class="tree-content">
+            <div class="tree-q">是否有可见平台？</div>
+            <div class="tree-a">
+              <div class="no"><strong>无 →</strong>"暂无可访问平台"页 + 引导联系管理员</div>
+              <div class="yes"><strong>有 →</strong>进入下一判断</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tree-step">
+          <div class="tree-num">3</div>
+          <div class="tree-content">
+            <div class="tree-q">user.primaryPlatform 仍可见？</div>
+            <div class="tree-a">
+              <div class="yes"><strong>是 →</strong>落地"主平台 / 主子系统"（主子系统失效则落地主平台默认 + Toast 提示）</div>
+              <div class="no"><strong>否 →</strong>进入下一判断</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tree-step">
+          <div class="tree-num">4</div>
+          <div class="tree-content">
+            <div class="tree-q">仅 1 个可见平台？</div>
+            <div class="tree-a">
+              <div class="yes"><strong>是 →</strong>直达该平台默认子系统</div>
+              <div class="no"><strong>否 →</strong>进入下一判断</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tree-step">
+          <div class="tree-num">5</div>
+          <div class="tree-content">
+            <div class="tree-q">lastVisited 仍可见？</div>
+            <div class="tree-a">
+              <div class="yes"><strong>是 →</strong>恢复上次离开的子系统页</div>
+              <div class="no"><strong>否 →</strong>落地 <code style="font-family: var(--mono); color: var(--blue);">/home</code> 个人工作台（待办 + 平台卡片 + 收藏）</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== Section 4: URL Spec ============== -->
+  <section>
+    <div class="sec-header">
+      <div class="sec-num">4</div>
+      <div>
+        <div class="sec-title">URL 命名规范 · 三段式</div>
+        <div class="sec-desc">所有子系统按统一语法收拢，鉴权、埋点、深链、面包屑均以此为锚。</div>
+      </div>
+    </div>
+
+    <div class="url-spec">
+      <div class="url-template">
+        <span class="slash">/</span><span class="seg-pf">{platform}</span><span class="slash">/</span><span class="seg-sys">{system}</span><span class="slash">/</span><span class="seg-mod">{module}</span><span class="slash">/</span><span class="seg-res">{resource}</span>
+      </div>
+      <div class="url-examples">
+        <div class="url-example"><b>/ops/ads/dashboard</b> · 广告整体看板</div>
+        <div class="url-example"><b>/ops/sales/orders/:orderId</b> · 订单详情</div>
+        <div class="url-example"><b>/scm/procurement/pos/:poId</b> · 采购单详情</div>
+        <div class="url-example"><b>/scm/logistics/shipments</b> · 物流发运</div>
+        <div class="url-example"><b>/support/finance/vouchers/:id</b> · 凭证详情</div>
+        <div class="url-example"><b>/support/contract/templates</b> · 合同模板</div>
+        <div class="url-example"><b>/project/pct/projects/:id</b> · PCT 项目</div>
+        <div class="url-example"><b>/ops/omnichannel/cockpit/overview</b> · 智能驾驶舱总览（OC-GTM）</div>
+        <div class="url-example"><b>/ops/omnichannel/cockpit/profit</b> · 利润瀑布图</div>
+        <div class="url-example"><b>/ai/workflow/builder/:flowId</b> · 工作流编辑器</div>
+        <div class="url-example"><b>/cognition/app/posts/:postId</b> · 认知文章详情</div>
+        <div class="url-example"><b>/cognition/admin/review</b> · 内容审核工作台</div>
+        <div class="url-example"><b>/home</b> · 个人工作台（多平台用户兜底）</div>
+      </div>
+      <p style="margin-top: 18px; font-size: 12px; color: var(--txt3); text-align: center;">
+        Scope 命名同步规则：<code style="font-family: var(--mono); color: var(--purple);">{platform}:{system}:{action}</code> · 例 <code style="font-family: var(--mono); color: var(--purple);">ops:ads:read</code> / <code style="font-family: var(--mono); color: var(--purple);">support:finance:close-period</code>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============== Section 5: Operations 3-Layer ============== -->
+  <section>
+    <div class="sec-header">
+      <div class="sec-num">5</div>
+      <div>
+        <div class="sec-title">运营保持单纯 · 三层归位法</div>
+        <div class="sec-desc">"运营"不是一个系统，它是一种行为。拆三层归位，菜单上不再出现"运营系统"这个词。</div>
+      </div>
+    </div>
+
+    <div class="ops-layers">
+      <div class="ops-layer l1">
+        <div class="lvl">L1 · 项目化</div>
+        <h4>有起止的运营动作</h4>
+        <div class="nature">跨域协同 · 项目化管理</div>
+        <div class="home">归属 → <strong>/project</strong></div>
+        <div class="examples">
+          <span>新品上市</span><span>PCT 项目</span><span>大促 Campaign</span><span>退市清库</span>
+        </div>
+      </div>
+      <div class="ops-layer l2">
+        <div class="lvl">L2 · 例行性</div>
+        <h4>每日 / 每周的执行动作</h4>
+        <div class="nature">谁的域，进谁的工作台</div>
+        <div class="home">归属 → <strong>各子系统内部</strong></div>
+        <div class="examples">
+          <span>调价 → ops/sales</span><span>广告调优 → ops/ads</span><span>客诉 → ops/customer-service</span><span>补货 → scm/procurement</span>
+        </div>
+      </div>
+      <div class="ops-layer l3">
+        <div class="lvl">L3 · 经营性</div>
+        <h4>看数与决策</h4>
+        <div class="nature">横向看板 · OC-GTM 操盘</div>
+        <div class="home">归属 → <strong>/ops/omnichannel 智能驾驶舱</strong></div>
+        <div class="examples">
+          <span>BP 达成</span><span>毛利预警</span><span>库存周转</span><span>Baseline 偏差</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== Section 6: Decisions ============== -->
+  <section>
+    <div class="sec-header">
+      <div class="sec-num">6</div>
+      <div>
+        <div class="sec-title">关键决策清单（D1 – D6）</div>
+        <div class="sec-desc">本次评审需逐项确认；任一被否决则方案升版。</div>
+      </div>
+    </div>
+
+    <div class="decisions">
+      <div class="decision-card">
+        <div class="id">D1</div>
+        <h4>顶栏切换器形态</h4>
+        <div class="choice">两级切换器：左"平台"、右"子系统"</div>
+        <div class="reason">替代当前 18 项扁平下拉；平台稳定 6 项，子系统按平台动态加载。</div>
+      </div>
+      <div class="decision-card">
+        <div class="id">D2</div>
+        <h4>URL 命名</h4>
+        <div class="choice">/{platform}/{system}/{module}/{resource}</div>
+        <div class="reason">鉴权 / 埋点 / 面包屑 / 深链分享所需的最小语法。</div>
+      </div>
+      <div class="decision-card">
+        <div class="id">D3</div>
+        <h4>登录落地策略</h4>
+        <div class="choice">深链 → 主岗位 → 唯一可见平台 → lastVisited → /home</div>
+        <div class="reason">让一线零选择直达，新员工 / 多岗位有引导。</div>
+      </div>
+      <div class="decision-card">
+        <div class="id">D4</div>
+        <h4>站外广告归属</h4>
+        <div class="choice">收编进 ops/ads 内部 tab，不单立</div>
+        <div class="reason">与已定口径一致；避免维度错位。</div>
+      </div>
+      <div class="decision-card">
+        <div class="id">D5</div>
+        <h4>运营纯化</h4>
+        <div class="choice">不立"运营系统"；运营行为按三层下沉</div>
+        <div class="reason">防止运营变成大杂烩；详见 §5。</div>
+      </div>
+      <div class="decision-card">
+        <div class="id">D6</div>
+        <h4>鉴权模型</h4>
+        <div class="choice">RBAC + Scope；前端软可见、后端强校验</div>
+        <div class="reason">前端永远不能成为权限的最后一道闸。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== Section 7: Roadmap ============== -->
+  <section>
+    <div class="sec-header">
+      <div class="sec-num">7</div>
+      <div>
+        <div class="sec-title">落地路径 · 四阶段</div>
+        <div class="sec-desc">先锁方案，再做门面收编，再上个性化，最后扩展。每阶段独立可交付。</div>
+      </div>
+    </div>
+
+    <div class="roadmap">
+      <div class="phase p0">
+        <div class="ph-tag">Phase 0</div>
+        <div class="ph-time">本周内 · 零代码</div>
+        <h4>锁方案</h4>
+        <ul>
+          <li>评审通过 D1–D6</li>
+          <li>沉淀 ADR 文档</li>
+          <li>同步业务中台/财务边界口径</li>
+        </ul>
+      </div>
+      <div class="phase p1">
+        <div class="ph-tag">Phase 1</div>
+        <div class="ph-time">2026 H1</div>
+        <h4>路由与门面收编</h4>
+        <ul>
+          <li>AppShell + platforms.config.ts</li>
+          <li>6 平台路由前缀 + 老路径 301</li>
+          <li>顶栏两级切换器替换</li>
+          <li>站外广告降为 ops/ads tab</li>
+        </ul>
+      </div>
+      <div class="phase p2">
+        <div class="ph-tag">Phase 2</div>
+        <div class="ph-time">2026 H2</div>
+        <h4>个性化与权限</h4>
+        <ul>
+          <li>UserNavProfile 配置后台</li>
+          <li>resolveLandingTarget()</li>
+          <li>/home 个人工作台</li>
+          <li>Cmd+K 全局搜索</li>
+          <li>Scope 强校验接入网关</li>
+        </ul>
+      </div>
+      <div class="phase p3">
+        <div class="ph-tag">Phase 3</div>
+        <div class="ph-time">2027</div>
+        <h4>智能与扩展</h4>
+        <ul>
+          <li>跨平台工作流编排</li>
+          <li>AI 平台与运营平台 MCP 互通</li>
+          <li>评估多域名独立部署</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== Section 8: Open Items ============== -->
+  <section>
+    <div class="sec-header">
+      <div class="sec-num">8</div>
+      <div>
+        <div class="sec-title">待评审确认的开放项（O1 – O4）</div>
+        <div class="sec-desc">本次评审请逐项过；若与默认推荐不同，方案升版为 v1.1。</div>
+      </div>
+    </div>
+
+    <div class="open-items">
+      <div class="open-item">
+        <div class="id">O1</div>
+        <h4>lastVisited 在决策链中的优先级</h4>
+        <div class="default">默认推荐：<b>排在"主岗位"之后</b>（不抢主岗位）</div>
+      </div>
+      <div class="open-item">
+        <div class="id">O2</div>
+        <h4>深链无权限时的行为</h4>
+        <div class="default">默认推荐：<b>直接 403 + 申请按钮</b>（不静默回退）</div>
+      </div>
+      <div class="open-item">
+        <div class="id">O3</div>
+        <h4>MFA 触发策略</h4>
+        <div class="default">默认推荐：<b>高敏角色 + 异地登录触发</b></div>
+      </div>
+      <div class="open-item">
+        <div class="id">O4</div>
+        <h4>未授权平台的呈现</h4>
+        <div class="default">默认推荐：<b>灰显 + 申请按钮</b>（非完全隐藏）</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== Footer ============== -->
+  <footer>
+    <div class="left">
+      <span>v1.0</span>
+      <span>2026-05-09</span>
+      <span>6 平台 · 17+ 子系统</span>
+    </div>
+    <div>
+      作者：<a href="https://github.com/beynawoo-code" target="_blank" rel="noopener">@beynawoo-code · GitHub</a>
+    </div>
+  </footer>
+
+  <!-- ============== Interactive Mockup Switcher ============== -->
+  <script>
+    (function () {
+      const ROLE_CONFIG = {
+        ads: {
+          name: '广告优化师 · Alex',
+          initial: 'A',
+          pfId: 'ops', pfName: '运营平台', pfColor: 'var(--p-ops)', pfGlow: 'rgba(20, 184, 166, .25)',
+          sysName: '广告',
+          sideTitle: '广告',
+          sideItems: ['整体看板', '广告活动', '站外广告', '关键词', '报告中心'],
+          activeIdx: 0,
+          breadPf: '运营平台', breadSys: '广告', breadMod: '整体看板',
+          pageTitle: '广告整体看板',
+          stats: [['Adsales', '3.29M'], ['Spend', '394K'], ['ACOS', '11.99%'], ['ROAS', '8.34']]
+        },
+        finance: {
+          name: '财务 · Fiona',
+          initial: 'F',
+          pfId: 'sup', pfName: '支持平台', pfColor: 'var(--p-sup)', pfGlow: 'rgba(100, 116, 139, .3)',
+          sysName: '财务',
+          sideTitle: '财务',
+          sideItems: ['财务总览', '凭证管理', '对账中心', '期间关账', '税务申报'],
+          activeIdx: 0,
+          breadPf: '支持平台', breadSys: '财务', breadMod: '财务总览',
+          pageTitle: '财务总览',
+          stats: [['本月收入', '12.6M'], ['成本占比', '64.2%'], ['未对账', '38'], ['关账状态', '进行中']]
+        },
+        cs: {
+          name: '客服 · Cathy',
+          initial: 'C',
+          pfId: 'ops', pfName: '运营平台', pfColor: 'var(--p-ops)', pfGlow: 'rgba(20, 184, 166, .25)',
+          sysName: '客服',
+          sideTitle: '客服',
+          sideItems: ['工单收件箱', '退换货 RMA', '差评预警', '坐席管理', '知识库'],
+          activeIdx: 0,
+          breadPf: '运营平台', breadSys: '客服', breadMod: '工单收件箱',
+          pageTitle: '工单收件箱',
+          stats: [['待处理', '142'], ['SLA 达成', '92.4%'], ['今日新增', '67'], ['超时', '5']]
+        },
+        gtm: {
+          name: 'GTM/PM · Grace',
+          initial: 'G',
+          pfId: 'prj', pfName: '项目平台', pfColor: 'var(--p-prj)', pfGlow: 'rgba(249, 115, 22, .28)',
+          sysName: '项目中心',
+          sideTitle: '项目中心',
+          sideItems: ['我的项目', 'PCT 工作台', 'Gate 评审', '里程碑', '资源占用'],
+          activeIdx: 0,
+          breadPf: '项目平台', breadSys: '项目中心', breadMod: '我的项目',
+          pageTitle: '我的项目（H1）',
+          stats: [['进行中', '14'], ['上市倒计时', '23 天'], ['Gate 待审', '3'], ['延期风险', '2']]
+        },
+        exec: {
+          name: 'GTM/Sales · Leader',
+          initial: 'E',
+          pfId: 'ops', pfName: '运营平台', pfColor: 'var(--p-ops)', pfGlow: 'rgba(20, 184, 166, .28)',
+          sysName: '全渠道（OC-GTM）',
+          sideTitle: '智能驾驶舱',
+          sideItems: ['全局总览', '品牌大盘', '利润分析', '风控预警', 'BP 达成'],
+          activeIdx: 0,
+          breadPf: '运营平台', breadSys: '全渠道（OC-GTM）', breadMod: '智能驾驶舱 · 全局总览',
+          pageTitle: '全局总览 · OC-GTM 智能驾驶舱',
+          stats: [['全渠道营收', '286.4M'], ['毛利率', '38.7%'], ['BP 达成', '94.2%'], ['预警事件', '7']]
+        },
+        admin: {
+          name: '高级管理员 · Admin',
+          initial: 'M',
+          pfId: 'sup', pfName: '支持平台', pfColor: 'var(--p-sup)', pfGlow: 'rgba(100, 116, 139, .35)',
+          sysName: '用户与权限',
+          sideTitle: '用户与权限',
+          sideItems: ['组织架构', '用户管理', '角色权限', '平台授权矩阵', '审计日志'],
+          activeIdx: 2,
+          breadPf: '支持平台', breadSys: '用户与权限', breadMod: '角色权限',
+          pageTitle: '角色权限与平台授权矩阵',
+          stats: [['可访问平台', '6'], ['可管子系统', '28'], ['活跃角色', '67'], ['待审批申请', '11']]
+        },
+        cog: {
+          name: '认知贡献者 · Coral',
+          initial: 'K',
+          pfId: 'cog', pfName: '认知平台', pfColor: 'var(--p-cog)', pfGlow: 'rgba(30, 58, 138, .35)',
+          sysName: '认知 APP',
+          sideTitle: '认知 APP',
+          sideItems: ['推荐流', '我的提报', '订阅频道', '收藏与点赞', '专家问答'],
+          activeIdx: 1,
+          breadPf: '认知平台', breadSys: '认知 APP', breadMod: '我的提报',
+          pageTitle: '我的提报 · 知识与经验沉淀',
+          stats: [['已发布', '24'], ['累计阅读', '12.8K'], ['获赞', '1.4K'], ['待审核', '3']]
+        }
+      };
+
+      // 演示：不同角色的“可切换平台 / 子系统”权限集合
+      const ROLE_PERMISSIONS = {
+        ads: {
+          platforms: ['运营平台'],
+          systemsByPlatform: {
+            '运营平台': ['广告', '销售', '自营', '商超', '分销', '客服', '用户', '全渠道（OC-GTM）']
+          }
+        },
+        finance: {
+          platforms: ['支持平台'],
+          systemsByPlatform: {
+            '支持平台': ['财务', '认证', '合同', '知识产权', '研发', '用户与权限']
+          }
+        },
+        cs: {
+          platforms: ['运营平台'],
+          systemsByPlatform: {
+            '运营平台': ['客服', '用户', '销售']
+          }
+        },
+        gtm: {
+          platforms: ['项目平台', '运营平台'],
+          systemsByPlatform: {
+            '项目平台': ['项目中心', '立项中心', 'Gate 评审', '项目模板库'],
+            '运营平台': ['全渠道（OC-GTM）', '销售', '广告']
+          }
+        },
+        exec: {
+          platforms: ['运营平台', '项目平台', 'AI 平台', '支持平台'],
+          systemsByPlatform: {
+            '运营平台': ['全渠道（OC-GTM）', '销售', '广告', '客服'],
+            '项目平台': ['项目中心', 'Gate 评审'],
+            'AI 平台': ['知言对话', 'AI 成长营', '智能预警', '工作流'],
+            '支持平台': ['财务', '合同', '用户与权限']
+          }
+        },
+        admin: {
+          platforms: ['支持平台', '运营平台', '供应链平台', 'AI 平台', '项目平台', '认知平台'],
+          systemsByPlatform: {
+            '支持平台': ['用户与权限', '财务', '认证', '合同', '知识产权', '研发'],
+            '运营平台': ['全渠道（OC-GTM）', '销售', '自营', '商超', '分销', '广告', '客服', '用户'],
+            '供应链平台': ['采购', '生产', '物流（含交付）', '质量'],
+            'AI 平台': ['知言对话', 'AI 成长营', '智能预警', '工作流', '知识库', 'Agent 配置'],
+            '项目平台': ['立项中心', '项目工作台', 'Gate 评审', '项目模板库', '奖金输出'],
+            '认知平台': ['认知 APP', '认知后台']
+          }
+        },
+        cog: {
+          platforms: ['认知平台'],
+          systemsByPlatform: {
+            '认知平台': ['认知 APP', '认知后台']
+          }
+        }
+      };
+
+      // 全员开放平台：所有角色都可访问（含对应子系统）
+      const UNIVERSAL_ACCESS = {
+        platforms: ['认知平台', '项目平台'],
+        systemsByPlatform: {
+          '认知平台': ['认知 APP', '认知后台'],
+          '项目平台': ['立项中心', '项目工作台', 'Gate 评审', '项目模板库', '奖金输出']
+        }
+      };
+
+      const $ = id => document.getElementById(id);
+      const tabsEl = $('roleTabs');
+      const frame = $('mockupFrame');
+      const sideMenu = $('sideMenu');
+      const statRow = $('statRow');
+      const pfSwitcher = $('pfSwitcher');
+      const sysSwitcher = $('sysSwitcher');
+      const pfMenu = $('pfMenu');
+      const sysMenu = $('sysMenu');
+      const permissionHint = $('permissionHint');
+
+      const ALL_PLATFORMS = ['认知平台', '项目平台', 'AI 平台', '运营平台', '供应链平台', '支持平台'];
+      const ALL_SYSTEMS_BY_PLATFORM = {
+        '认知平台': ['认知 APP', '认知后台'],
+        '项目平台': ['立项中心', '项目工作台', '项目中心', 'Gate 评审', '项目模板库', '奖金输出'],
+        'AI 平台': ['知言对话', 'AI 成长营', '智能预警', '工作流', '知识库', 'Agent 配置'],
+        '运营平台': ['全渠道（OC-GTM）', '销售', '自营', '商超', '分销', '广告', '广告（含站外）', '客服', '用户'],
+        '供应链平台': ['采购', '生产', '物流（含交付）', '质量'],
+        '支持平台': ['用户与权限', '财务', '认证', '合同', '知识产权', '研发']
+      };
+
+      let currentRoleId = 'ads';
+      let currentPlatform = '';
+      let currentSystem = '';
+
+      function getRolePermission(roleId) {
+        const conf = ROLE_CONFIG[roleId];
+        const fallback = {
+          platforms: [conf.pfName],
+          systemsByPlatform: { [conf.pfName]: [conf.sysName] }
+        };
+        const base = ROLE_PERMISSIONS[roleId] || fallback;
+        const mergedPlatforms = Array.from(new Set([
+          ...base.platforms,
+          ...UNIVERSAL_ACCESS.platforms
+        ]));
+
+        const mergedSystemsByPlatform = { ...base.systemsByPlatform };
+        UNIVERSAL_ACCESS.platforms.forEach((platformName) => {
+          mergedSystemsByPlatform[platformName] = Array.from(new Set([
+            ...(mergedSystemsByPlatform[platformName] || []),
+            ...(UNIVERSAL_ACCESS.systemsByPlatform[platformName] || [])
+          ]));
+        });
+
+        return {
+          platforms: mergedPlatforms,
+          systemsByPlatform: mergedSystemsByPlatform
+        };
+      }
+
+      function syncSwitcherView() {
+        $('pfName').textContent = currentPlatform;
+        $('sysName').textContent = currentSystem;
+        $('breadPf').textContent = currentPlatform;
+        $('breadSys').textContent = currentSystem;
+      }
+
+      function closeMenus() {
+        pfMenu.classList.remove('open');
+        sysMenu.classList.remove('open');
+      }
+
+      function showPermissionHint(message) {
+        permissionHint.textContent = message;
+        permissionHint.classList.add('active');
+        setTimeout(() => permissionHint.classList.remove('active'), 1200);
+      }
+
+      function selectPlatform(nextPlatform) {
+        const perm = getRolePermission(currentRoleId);
+        if (!perm.platforms.includes(nextPlatform)) return;
+        currentPlatform = nextPlatform;
+        const systems = perm.systemsByPlatform[currentPlatform] || [];
+        if (!systems.includes(currentSystem)) {
+          currentSystem = systems[0] || currentSystem;
+        }
+        syncSwitcherView();
+        renderMenus();
+      }
+
+      function selectSystem(nextSystem) {
+        const perm = getRolePermission(currentRoleId);
+        const systems = perm.systemsByPlatform[currentPlatform] || [];
+        if (!systems.includes(nextSystem)) return;
+        currentSystem = nextSystem;
+        syncSwitcherView();
+        renderMenus();
+      }
+
+      function renderMenus() {
+        const perm = getRolePermission(currentRoleId);
+
+        pfMenu.innerHTML = '';
+        ALL_PLATFORMS.forEach(platformName => {
+          const isAuthorized = perm.platforms.includes(platformName);
+          const item = document.createElement('button');
+          item.className = `switcher-item${platformName === currentPlatform ? ' active' : ''}${isAuthorized ? '' : ' locked'}`;
+          item.type = 'button';
+          item.innerHTML = `${isAuthorized ? '' : '<span class="lock-icon">&#128274;</span>'}${platformName}`;
+          item.onclick = (e) => {
+            e.stopPropagation();
+            if (!isAuthorized) {
+              showPermissionHint(`未授权平台：${platformName}（可申请权限）`);
+              closeMenus();
+              return;
+            }
+            selectPlatform(platformName);
+            closeMenus();
+          };
+          pfMenu.appendChild(item);
+        });
+
+        sysMenu.innerHTML = '';
+        const systems = ALL_SYSTEMS_BY_PLATFORM[currentPlatform] || (perm.systemsByPlatform[currentPlatform] || []);
+        const authorizedSystems = perm.systemsByPlatform[currentPlatform] || [];
+        systems.forEach(systemName => {
+          const isAuthorized = authorizedSystems.includes(systemName);
+          const item = document.createElement('button');
+          item.className = `switcher-item${systemName === currentSystem ? ' active' : ''}${isAuthorized ? '' : ' locked'}`;
+          item.type = 'button';
+          item.innerHTML = `${isAuthorized ? '' : '<span class="lock-icon">&#128274;</span>'}${systemName}`;
+          item.onclick = (e) => {
+            e.stopPropagation();
+            if (!isAuthorized) {
+              showPermissionHint(`未授权子系统：${systemName}（可申请权限）`);
+              closeMenus();
+              return;
+            }
+            selectSystem(systemName);
+            closeMenus();
+          };
+          sysMenu.appendChild(item);
+        });
+      }
+
+      function bindSwitcherInteractions() {
+        pfSwitcher.onclick = (e) => {
+          e.stopPropagation();
+          const isOpen = pfMenu.classList.contains('open');
+          closeMenus();
+          if (!isOpen) pfMenu.classList.add('open');
+        };
+
+        sysSwitcher.onclick = (e) => {
+          e.stopPropagation();
+          const isOpen = sysMenu.classList.contains('open');
+          closeMenus();
+          if (!isOpen) sysMenu.classList.add('open');
+        };
+
+        document.addEventListener('click', closeMenus);
+      }
+
+      function applyRole(roleId) {
+        const c = ROLE_CONFIG[roleId];
+        if (!c) return;
+        currentRoleId = roleId;
+        frame.style.setProperty('--accent', c.pfColor);
+        frame.style.setProperty('--accent-glow', c.pfGlow);
+        currentPlatform = c.pfName;
+        currentSystem = c.sysName;
+        syncSwitcherView();
+        $('userInitial').textContent = c.initial;
+        $('breadPf').textContent = c.breadPf;
+        $('breadSys').textContent = c.breadSys;
+        $('breadMod').textContent = c.breadMod;
+        $('pageTitle').textContent = c.pageTitle;
+
+        sideMenu.innerHTML = `<div class="side-title">${c.sideTitle}</div>` +
+          c.sideItems.map((item, i) => `<div class="side-item${i === c.activeIdx ? ' active' : ''}">${item}</div>`).join('');
+
+        statRow.innerHTML = c.stats.map(([l, v]) =>
+          `<div class="mockup-stat"><div class="label">${l}</div><div class="val">${v}</div></div>`
+        ).join('');
+
+        renderMenus();
+      }
+
+      tabsEl.addEventListener('click', e => {
+        const tab = e.target.closest('.role-tab');
+        if (!tab) return;
+        tabsEl.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        applyRole(tab.dataset.role);
+      });
+
+      bindSwitcherInteractions();
+      applyRole('ads');
+    })();
+  </script>
+
+</body>
+</html>
