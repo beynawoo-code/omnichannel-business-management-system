@@ -382,6 +382,87 @@
             font-size: 14px;
         }
 
+        .layer-detail {
+            margin: 10px 0 0;
+            padding-left: 18px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .layer-detail li {
+            margin: 4px 0;
+        }
+
+        .hierarchy-path {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-top: 14px;
+            padding: 16px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #ecfdf5, #eff6ff);
+            border: 1px solid #bfdbfe;
+        }
+
+        .path-step {
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: #fff;
+            border: 1px solid #93c5fd;
+            color: #1d4ed8;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .path-arrow {
+            color: #64748b;
+            font-weight: 700;
+        }
+
+        .perspective-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .perspective-card {
+            padding: 16px;
+            border-radius: 14px;
+            background: #fff;
+            border: 1px solid var(--line);
+        }
+
+        .perspective-card h4 {
+            margin: 0 0 8px;
+            font-size: 15px;
+            color: #1e40af;
+        }
+
+        .perspective-card .question {
+            margin: 0 0 6px;
+            color: var(--ink);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .perspective-card .path {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .perspective-note {
+            margin-top: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            font-size: 13px;
+        }
+
         .governance {
             display: grid;
             grid-template-columns: 0.9fr 1.2fr 0.9fr;
@@ -465,7 +546,8 @@
             .book-grid,
             .look-grid,
             .report-grid,
-            .governance {
+            .governance,
+            .perspective-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -712,18 +794,77 @@
             </div>
             <div class="layers">
                 <div class="layer">
-                    <strong>结果层：最终经营结果</strong>
+                    <strong>结果层：最终经营结果（What happened）</strong>
                     <span>净利润、EBITDA、现金流、预算达成率、收入增长率。</span>
                 </div>
                 <div class="layer">
-                    <strong>过程层：业务财务拆解</strong>
-                    <span>按产品线、渠道、区域、国家、SKU拆解收入、毛利、费用和边际贡献。</span>
+                    <strong>过程层：业务财务拆解（Where — 责任主体）</strong>
+                    <span>在结果层基础上，定位「在哪个经营单元赚钱/亏钱」；各节点展示收入、毛利、费用、边际贡献。</span>
+                    <ul class="layer-detail">
+                        <li><strong>维度字典</strong>：产品线、区域、国家、渠道、场景、品类、SKU、店铺、活动类型、责任部门。</li>
+                        <li><strong>默认主路径</strong>（跨境全渠道推荐）：按从大到小递进下钻，而非维度随意并列。</li>
+                    </ul>
+                    <div class="hierarchy-path">
+                        <span class="path-step">产品线</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-step">区域</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-step">国家</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-step">渠道</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-step">场景</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-step">品类</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-step">SKU</span>
+                    </div>
                 </div>
                 <div class="layer">
-                    <strong>因素层：业务驱动指标</strong>
-                    <span>流量、转化率、客单价、广告CPC、退货率、库存周转、履约时效。</span>
+                    <strong>因素层：业务驱动指标（Why — 根因解释）</strong>
+                    <span>流量、转化率、客单价、广告CPC、退货率、库存周转、履约时效；解释过程层差异背后的业务动作。</span>
                 </div>
             </div>
+
+            <div class="section-title" style="margin-top: 28px;">
+                <h2>4.1 经营问题视角：先定问题，再定下钻路径</h2>
+                <p>过程层不是固定一种拆法。应先明确经营问题，再选择主路径或旁路下钻；维度顺序服务于决策，而非服务于报表排版。</p>
+            </div>
+            <div class="perspective-grid">
+                <div class="perspective-card">
+                    <h4>产品盈利视角</h4>
+                    <p class="question">哪个产品线/品类真正赚钱？</p>
+                    <p class="path">推荐路径：产品线 → 品类 → SKU → 国家 → 渠道</p>
+                </div>
+                <div class="perspective-card">
+                    <h4>市场扩张视角</h4>
+                    <p class="question">哪个区域/国家增长有效、利润健康？</p>
+                    <p class="path">推荐路径：区域 → 国家 → 渠道 → 产品线 → SKU</p>
+                </div>
+                <div class="perspective-card">
+                    <h4>渠道效率视角</h4>
+                    <p class="question">哪个渠道投放/转化/履约效率差？</p>
+                    <p class="path">推荐路径：渠道 → 国家 → 场景/活动 → 产品线 → SKU</p>
+                </div>
+                <div class="perspective-card">
+                    <h4>单品诊断视角</h4>
+                    <p class="question">某个 SKU 为何亏损或毛利骤降？</p>
+                    <p class="path">推荐路径：SKU → 国家 → 渠道 → 场景 → 费用项</p>
+                </div>
+                <div class="perspective-card">
+                    <h4>活动复盘视角</h4>
+                    <p class="question">大促/Deal/Coupon 回报是否达标？</p>
+                    <p class="path">推荐路径：场景/活动 → 渠道 → 产品线 → SKU</p>
+                </div>
+                <div class="perspective-card">
+                    <h4>预算执行视角</h4>
+                    <p class="question">预算偏差来自量、价、结构还是费用？</p>
+                    <p class="path">推荐路径：责任部门/BU → 默认主路径 → 量价利/费用差异拆解</p>
+                </div>
+            </div>
+            <p class="perspective-note">
+                <strong>设计原则：</strong>默认主路径用于常规经营会；旁路下钻用于专题分析。过程层回答 Where（责任主体），因素层回答 Why（业务根因），两者配合才能形成可行动的管理报表。
+            </p>
         </section>
 
         <section class="card">

@@ -162,6 +162,86 @@
         .arrow-right {
             display: none;
         }
+
+        .footer {
+            margin: 28px 0 8px;
+            padding: 18px;
+            text-align: center;
+            color: #667085;
+            border-top: 1px solid #e9ecef;
+            font-size: 13px;
+        }
+
+        .process-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-top: 28px;
+        }
+
+        .process-section h2 {
+            margin: 0 0 8px;
+            color: #2c3e50;
+        }
+
+        .process-section .lead {
+            margin: 0 0 20px;
+            color: #667085;
+            font-size: 14px;
+        }
+
+        .hierarchy-flow {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            padding: 14px;
+            margin-bottom: 18px;
+            border-radius: 8px;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+        }
+
+        .hierarchy-flow span {
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #fff;
+            border: 1px solid #6ee7b7;
+            color: #047857;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .hierarchy-flow .arrow {
+            color: #64748b;
+            font-weight: 700;
+        }
+
+        .perspective-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .perspective-table th,
+        .perspective-table td {
+            padding: 10px 12px;
+            border: 1px solid #e9ecef;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .perspective-table th {
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        .perspective-table td:first-child {
+            font-weight: 600;
+            color: #1e40af;
+            white-space: nowrap;
+        }
         
         @media (max-width: 992px) {
             .arch-grid {
@@ -307,7 +387,7 @@
                     
                     <div class="arch-item">
                         <div class="item-title">过程层指标 (业务财务)</div>
-                        <div class="item-desc">各渠道毛利、各产品线边际贡献 (Contribution Margin)</div>
+                        <div class="item-desc">按经营单元拆解收入、毛利、费用、边际贡献；默认主路径：产品线→区域→国家→渠道→场景→品类→SKU</div>
                     </div>
                     
                     <div class="arch-item" style="text-align: center; color: #9c27b0;">⬇ 汇总</div>
@@ -334,7 +414,7 @@
                     
                     <div class="arch-item">
                         <div class="item-title">多维分析报告 (Drill-down)</div>
-                        <div class="item-desc">支持按产品线/区域/渠道下钻的盈亏明细分析</div>
+                        <div class="item-desc">按经营问题选择下钻路径：产品盈利、市场扩张、渠道效率、单品诊断、活动复盘</div>
                     </div>
                     
                     <div class="arch-item">
@@ -345,8 +425,74 @@
                 
             </div>
         </section>
+
+        <section class="process-section">
+            <h2>三、过程层与经营问题视角</h2>
+            <p class="lead">过程层提供「维度字典 + 默认主路径 + 按问题切换的旁路下钻」。维度不是随意并列，顺序应服务于经营决策。</p>
+
+            <p style="margin:0 0 10px; font-weight:600; color:#2c3e50;">默认主路径（跨境全渠道推荐）</p>
+            <div class="hierarchy-flow">
+                <span>产品线</span><span class="arrow">→</span>
+                <span>区域</span><span class="arrow">→</span>
+                <span>国家</span><span class="arrow">→</span>
+                <span>渠道</span><span class="arrow">→</span>
+                <span>场景</span><span class="arrow">→</span>
+                <span>品类</span><span class="arrow">→</span>
+                <span>SKU</span>
+            </div>
+
+            <p style="margin:0 0 10px; font-weight:600; color:#2c3e50;">经营问题 → 推荐下钻路径</p>
+            <table class="perspective-table">
+                <thead>
+                    <tr>
+                        <th>经营问题视角</th>
+                        <th>核心追问</th>
+                        <th>推荐下钻路径</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>产品盈利</td>
+                        <td>哪个产品线/品类真正赚钱？</td>
+                        <td>产品线 → 品类 → SKU → 国家 → 渠道</td>
+                    </tr>
+                    <tr>
+                        <td>市场扩张</td>
+                        <td>哪个区域/国家增长有效？</td>
+                        <td>区域 → 国家 → 渠道 → 产品线 → SKU</td>
+                    </tr>
+                    <tr>
+                        <td>渠道效率</td>
+                        <td>哪个渠道投放/转化/履约效率差？</td>
+                        <td>渠道 → 国家 → 场景/活动 → 产品线 → SKU</td>
+                    </tr>
+                    <tr>
+                        <td>单品诊断</td>
+                        <td>某个 SKU 为何亏损？</td>
+                        <td>SKU → 国家 → 渠道 → 场景 → 费用项</td>
+                    </tr>
+                    <tr>
+                        <td>活动复盘</td>
+                        <td>大促/Deal 回报是否达标？</td>
+                        <td>场景/活动 → 渠道 → 产品线 → SKU</td>
+                    </tr>
+                    <tr>
+                        <td>预算执行</td>
+                        <td>偏差来自量、价、结构还是费用？</td>
+                        <td>责任部门/BU → 默认主路径 → 量价利/费用差异</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="margin:16px 0 0; font-size:13px; color:#667085;">
+                <strong>三层分工：</strong>结果层回答「发生了什么」；过程层回答 Where（责任主体）；因素层回答 Why（流量、转化、退货率等根因）。常规经营会用默认主路径，专题分析可切换旁路路径。
+            </p>
+        </section>
         
     </div>
+
+    <footer class="footer">
+        作者：@beynawoo-code
+    </footer>
 
 </body>
 </html>
