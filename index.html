@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全渠道业务管理系统 · 架构与知识导航</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --ink: #243042;
+            --muted: #667085;
+            --line: #d9e2ec;
+            --blue: #2563eb;
+            --shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 32px 20px 48px;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(37, 99, 235, 0.10), transparent 32%),
+                radial-gradient(circle at top right, rgba(124, 58, 237, 0.08), transparent 28%),
+                var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+            line-height: 1.55;
+        }
+
+        .page { max-width: 960px; margin: 0 auto; }
+
+        .hero {
+            padding: 32px 28px;
+            color: #fff;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #102a56 0%, #1d4ed8 55%, #6d28d9 100%);
+            box-shadow: var(--shadow);
+            margin-bottom: 32px;
+        }
+
+        .hero h1 {
+            margin: 0 0 10px;
+            font-size: clamp(26px, 4vw, 36px);
+            letter-spacing: -0.03em;
+        }
+
+        .hero p {
+            margin: 0;
+            color: #dbeafe;
+            font-size: 15px;
+            max-width: 640px;
+        }
+
+        section { margin-bottom: 28px; }
+
+        h2 {
+            margin: 0 0 14px;
+            font-size: 18px;
+            color: var(--ink);
+        }
+
+        .card-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        @media (min-width: 640px) {
+            .card-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        .card {
+            display: block;
+            padding: 18px 20px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+        }
+
+        .card:hover {
+            border-color: #93c5fd;
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            margin: 0 0 6px;
+            font-size: 16px;
+            color: var(--blue);
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .footer {
+            margin-top: 36px;
+            padding-top: 18px;
+            border-top: 1px solid var(--line);
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .footer a {
+            color: var(--blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <header class="hero">
+            <h1>全渠道业务管理系统</h1>
+            <p>架构可视化与 FP&A 知识库导航。点击下方卡片打开对应页面。</p>
+        </header>
+
+        <section>
+            <h2>FP&A · 财务规划与分析</h2>
+            <div class="card-grid">
+                <a class="card" href="src/features/FP%26A/fpa-practice-guide-visual-architecture.html">
+                    <h3>FP&A 实战指南可视化架构图</h3>
+                    <p>管理报表体系、口径治理与落地推进路线。</p>
+                </a>
+                <a class="card" href="src/features/FP%26A/management-reporting-architecture.html">
+                    <h3>管理报表体系搭建与推进架构图</h3>
+                    <p>报表分层、维度路径与推进阶段。</p>
+                </a>
+            </div>
+        </section>
+
+        <section>
+            <h2>上层架构 · 业务与系统</h2>
+            <div class="card-grid">
+                <a class="card" href="src/features/upper-level-architecture/business_capability_architecture.html">
+                    <h3>业务全局能力架构图</h3>
+                    <p>全渠道业务能力域与能力地图。</p>
+                </a>
+                <a class="card" href="src/features/upper-level-architecture/system_architecture_diagram.html">
+                    <h3>系统架构设计总图</h3>
+                    <p>平台系统分层与集成关系。</p>
+                </a>
+                <a class="card" href="src/features/upper-level-architecture/oc_gtm_menu_v2.html">
+                    <h3>OC Platform 菜单架构 v2.0</h3>
+                    <p>智岩 OC 菜单模块与角色矩阵。</p>
+                </a>
+            </div>
+        </section>
+
+        <footer class="footer">
+            作者：<a href="https://github.com/beynawoo-code" target="_blank" rel="noopener">@beynawoo-code</a>
+        </footer>
+    </main>
+</body>
+</html>

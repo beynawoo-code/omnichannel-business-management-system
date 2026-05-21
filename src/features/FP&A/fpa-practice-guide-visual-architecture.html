@@ -541,6 +541,16 @@
             font-size: 13px;
         }
 
+        .footer a {
+            color: var(--blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
         @media (max-width: 1080px) {
             .system-map,
             .book-grid,
@@ -937,7 +947,14 @@
         </section>
 
         <footer class="footer">
-            作者：@beynawoo-code
+            <p style="margin:0 0 8px;">
+                <a href="../../../index.html">返回导航首页</a>
+                ·
+                <a href="management-reporting-architecture.html">管理报表体系搭建与推进架构图</a>
+            </p>
+            <p style="margin:0;">
+                作者：<a href="https://github.com/beynawoo-code" target="_blank" rel="noopener">@beynawoo-code</a>
+            </p>
         </footer>
     </main>
 </body>
